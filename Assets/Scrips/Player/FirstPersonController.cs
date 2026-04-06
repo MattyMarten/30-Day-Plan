@@ -41,6 +41,19 @@ namespace StarterAssets
 		[Tooltip("Time required before entering the fall state. Useful for walking down stairs")]
 		public float FallTimeout = 0.15f;
 
+		[Header("Crouch Settings")]
+		[Tooltip("CharacterController height while standing (auto-captured at Start if 0)")]
+		public float StandingHeight = 0f;
+
+		[Tooltip("CharacterController height while crouched")]
+		public float CrouchingHeight = 1.2f;
+
+		[Tooltip("How far to lower the CinemachineCameraTarget when crouched")]
+		public float CrouchCameraOffset = 0.6f;
+
+		[Tooltip("Layers considered as blockers when trying to stand")]
+		public LayerMask StandBlockLayers = ~0;
+
 		[Header("Player Grounded")]
 		[Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
 		public bool Grounded = true;
@@ -60,6 +73,10 @@ namespace StarterAssets
 
 		[Tooltip("How far upward to check when trying to stand")]
 		public float StandCheckDistance = 1f;
+
+		[Header("Jump Headroom Check")]
+		[Tooltip("Minimum free space above the character to allow jumping")]
+		public float JumpHeadroom = 0.2f;
 
 		[Header("Cinemachine")]
 		[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
@@ -83,6 +100,16 @@ namespace StarterAssets
 		// timeout delta time
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
+
+		// crouch
+		private float _standingHeight;
+		private float _targetHeight;
+
+		private Vector3 _standingCenter;
+		private Vector3 _crouchingCenter;
+
+		private Vector3 _camStandLocalPos;
+		private Vector3 _camCrouchLocalPos;
 
 #if ENABLE_INPUT_SYSTEM
 		private PlayerInput _playerInput;
@@ -117,14 +144,28 @@ namespace StarterAssets
 
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
+
+			// --- Crouch init ---
+		_standingHeight = (StandingHeight > 0f) ? StandingHeight : _controller.height;
+		_targetHeight = _standingHeight;
+
+		_standingCenter = _controller.center;
+
+			// When we shrink the capsule, we also move its center down so feet stay planted.
+		_crouchingCenter = _standingCenter;
+		_crouchingCenter.y -= (_standingHeight - CrouchingHeight) * 0.5f;
+
+			// Camera target positions (local space)
+		_camStandLocalPos = CinemachineCameraTarget.transform.localPosition;
+		_camCrouchLocalPos = _camStandLocalPos + Vector3.down * CrouchCameraOffset;
 		}
 
 		private void Update()
 		{
 			GroundedCheck();
 			JumpAndGravity();
-			Move();
 			Crouch();
+			Move();
 		}
 
 		private void LateUpdate()
@@ -213,7 +254,14 @@ namespace StarterAssets
 
 				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
 				{
-					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					if (CanJump())
+					{
+						_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					}
+					else
+					{
+						_input.jump = false;
+					}
 				}
 
 				if (_jumpTimeoutDelta >= 0.0f)
@@ -241,32 +289,79 @@ namespace StarterAssets
 
 		private void Crouch()
 		{
-			Vector3 targetScale;
+    		bool wantsCrouch = _input.crouch;
 
-			if (_input.crouch)
-			{
-				targetScale = new Vector3(1f, 0.5f, 1f);
-			}
-			else
-			{
-				if (CanStandUp())
-				{
-					targetScale = new Vector3(1f, 1f, 1f);
-				}
-				else
-				{
-					targetScale = new Vector3(1f, 0.5f, 1f);
-				}
-			}
+    		if (wantsCrouch)
+    		{
+        		_targetHeight = CrouchingHeight;
+    		}
+    		else
+    		{
+        			// Only stand if there's room
+        		_targetHeight = CanStandUp() ? _standingHeight : CrouchingHeight;
+    		}
 
-			transform.localScale = Vector3.Lerp(transform.localScale,targetScale,Time.deltaTime * CrouchTransitionSpeed
-			);
+    		bool isCrouchingTarget = _targetHeight <= (CrouchingHeight + 0.01f);
+
+    			// Smoothly adjust controller capsule
+    		_controller.height = Mathf.Lerp(_controller.height, _targetHeight, Time.deltaTime * CrouchTransitionSpeed);
+
+    		Vector3 targetCenter = isCrouchingTarget ? _crouchingCenter : _standingCenter;
+    		_controller.center = Vector3.Lerp(_controller.center, targetCenter, Time.deltaTime * CrouchTransitionSpeed);
+
+   				// Smoothly adjust camera target
+    		Vector3 camTarget = isCrouchingTarget ? _camCrouchLocalPos : _camStandLocalPos;
+    		CinemachineCameraTarget.transform.localPosition =
+        	Vector3.Lerp(CinemachineCameraTarget.transform.localPosition, camTarget, Time.deltaTime * CrouchTransitionSpeed);
 		}
 
 		private bool CanStandUp()
 		{
-			Vector3 origin = transform.position;
-			return !Physics.SphereCast(origin, StandCheckRadius, Vector3.up, out _, StandCheckDistance);
+				// If we're already essentially standing, allow
+			if (_controller.height >= _standingHeight - 0.02f)
+				return true;
+
+			float radius = Mathf.Max(StandCheckRadius, _controller.radius * 0.95f);
+
+				// Bottom of the capsule in world space (approx)
+			Vector3 worldCenter = transform.TransformPoint(_controller.center);
+			Vector3 bottom = worldCenter + Vector3.down * (_controller.height * 0.5f - radius);
+
+				// Extra headroom needed to reach standing height
+			float extra = (_standingHeight - _controller.height);
+			if (extra <= 0f) return true;
+
+			return !Physics.SphereCast(
+				bottom,
+				radius,
+				Vector3.up,
+				out _,
+				extra,
+				StandBlockLayers,
+				QueryTriggerInteraction.Ignore
+			);
+		}
+
+		private bool CanJump()
+		{
+				// We cast upward from near the top of the capsule
+			float radius = _controller.radius * 0.95f;
+
+			Vector3 worldCenter = transform.TransformPoint(_controller.center);
+
+				// Top of capsule sphere center (approx)
+			Vector3 top = worldCenter + Vector3.up * (_controller.height * 0.5f - radius);
+
+				// If something is very close above our head, don't allow starting a jump.
+			return !Physics.SphereCast(
+				top,
+				radius,
+				Vector3.up,
+				out _,
+				JumpHeadroom,
+				StandBlockLayers,
+				QueryTriggerInteraction.Ignore
+			);
 		}
 
 		private static float ClampAngle(float angle, float min, float max)

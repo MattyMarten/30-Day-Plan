@@ -212,6 +212,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RandomLoot",
+                    "type": "Button",
+                    "id": "4ac6ebde-4b06-4fe0-8347-0fe82ac85a57",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -581,7 +590,7 @@
                 {
                     "name": "",
                     "id": "dbb659ca-37c7-479d-aba0-a73d25e075b4",
-                    "path": "<Keyboard>/q",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -592,7 +601,7 @@
                 {
                     "name": "",
                     "id": "51c24176-bd63-4648-a83b-261c5766239f",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -630,6 +639,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Quests",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e82c141d-2e94-44cf-b08a-3d4f5bcf34e9",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RandomLoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -1,65 +1,41 @@
 using UnityEngine;
-using StarterAssets;
 
 public class ItemPickup : MonoBehaviour
 {
-    public Item item;
-    private bool playerInRange;
-    private StarterAssetsInputs input;
-    private PlayerHoldItem playerHoldItem;
-    private InventoryManager inventoryManager;
+    [Header("Item Data")]
+    [SerializeField] private Item item;
 
-    private void Update()
+    [Header("Optional")]
+    [Tooltip("If true, item will also equip/hold the heldPrefab when picked up.")]
+    [SerializeField] private bool autoHoldOnPickup = true;
+
+    public void PickUp(InventoryManager inventoryManager, PlayerHoldItem playerHoldItem)
     {
-        if (playerInRange && input != null && input.interact)
+        if (item == null)
         {
-            PickUp();
-            input.interact = false;
+            Debug.LogWarning($"{nameof(ItemPickup)}: No item assigned on pickup.", this);
+            return;
         }
-    }
 
- public void PickUp()
-    {
-        if (item == null) return;
-        if (playerHoldItem == null) return;
-        if (inventoryManager == null) return;
+        if (inventoryManager == null)
+        {
+            Debug.LogWarning($"{nameof(ItemPickup)}: inventoryManager reference is null.", this);
+            return;
+        }
 
         bool added = inventoryManager.AddItem(item);
-
-        if (added)
-        {
-            if (item.heldPrefab != null)
-            {
-                playerHoldItem.HoldItem(item.heldPrefab);
-            }
-
-            Debug.Log("Picked up: " + item.itemName);
-            Destroy(gameObject);
-        }
-        else
+        if (!added)
         {
             Debug.Log("Inventory full");
+            return;
         }
-    }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        if (autoHoldOnPickup && playerHoldItem != null && item.heldPrefab != null)
         {
-            playerInRange = true;
-            playerHoldItem = other.GetComponent<PlayerHoldItem>();
-            input = other.GetComponent<StarterAssetsInputs>();
-            inventoryManager = FindAnyObjectByType<InventoryManager>();
+            playerHoldItem.HoldItem(item.heldPrefab);
         }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInRange = false;
-            playerHoldItem = null;
-            input = null;
-        }
+        Debug.Log("Picked up: " + item.itemName);
+        Destroy(gameObject);
     }
 }

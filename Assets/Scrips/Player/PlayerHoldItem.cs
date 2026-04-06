@@ -2,27 +2,36 @@ using UnityEngine;
 
 public class PlayerHoldItem : MonoBehaviour
 {
-    public Transform handPoint;
+    [Header("References")]
+    [SerializeField] private Transform handPoint;
+
     private GameObject currentHeldItem;
 
     public void HoldItem(GameObject heldPrefab)
     {
         ClearHeldItem();
 
-        if (heldPrefab != null)
+        if (heldPrefab == null)
+            return;
+
+        if (handPoint == null)
         {
-            currentHeldItem = Instantiate(heldPrefab, handPoint);
-            currentHeldItem.transform.localPosition = Vector3.zero;
-            currentHeldItem.transform.localRotation = Quaternion.identity;
-            currentHeldItem.transform.localScale = Vector3.one;
+            Debug.LogWarning($"{nameof(PlayerHoldItem)}: handPoint is not assigned.", this);
+            return;
         }
+
+        currentHeldItem = Instantiate(heldPrefab, handPoint);
+        currentHeldItem.transform.localPosition = Vector3.zero;
+        currentHeldItem.transform.localRotation = Quaternion.identity;
+        currentHeldItem.transform.localScale = Vector3.one;
     }
+
     public void ClearHeldItem()
     {
-        if (currentHeldItem != null)
-        {
-            Destroy(currentHeldItem);
-            currentHeldItem = null;
-        }
+        if (currentHeldItem == null)
+            return;
+
+        Destroy(currentHeldItem);
+        currentHeldItem = null;
     }
 }
