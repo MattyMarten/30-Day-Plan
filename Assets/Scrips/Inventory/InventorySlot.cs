@@ -31,25 +31,36 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData == null)
+        if (eventData == null || eventData.pointerDrag == null)
             return;
 
-        if (eventData.pointerDrag == null)
+        DraggableItem dragged = eventData.pointerDrag.GetComponent<DraggableItem>();
+        if (dragged == null)
             return;
 
-        DraggableItem draggableItem = eventData.pointerDrag.GetComponent<DraggableItem>();
-        if (draggableItem == null)
+        Transform fromSlot = dragged.parentAfterDrag; // original slot
+        Transform toSlot = transform;
+
+        if (fromSlot == null)
             return;
 
-        // BLOCK dropping onto occupied slots for now (safe default).
-        // Later we can implement swapping.
-        DraggableItem existingItem = GetComponentInChildren<DraggableItem>();
-        if (existingItem != null && existingItem != draggableItem)
+        // Find existing item in target slot (direct child)
+        DraggableItem existing = null;
+        for (int i = 0; i < toSlot.childCount; i++)
         {
-            // Don't change parentAfterDrag => item will snap back to original slot.
-            return;
+            var di = toSlot.GetChild(i).GetComponent<DraggableItem>();
+            if (di != null) { existing = di; break; }
         }
 
-        draggableItem.parentAfterDrag = transform;
+        // If occupied -> swap
+        if (existing != null && existing != dragged)
+        {
+            existing.transform.SetParent(fromSlot, false);
+            var existingRT = existing.GetComponent<RectTransform>();
+            if (existingRT != null) existingRT.anchoredPosition = Vector2.zero;
+        }
+
+        // Drop dragged into this slot
+        dragged.parentAfterDrag = toSlot;
     }
 }

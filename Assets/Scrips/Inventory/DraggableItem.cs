@@ -9,6 +9,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     [HideInInspector] public Item item;
     [HideInInspector] public Transform parentAfterDrag;
+    [SerializeField] private RectTransform dragParent;
 
     private Canvas canvas;
     private CanvasGroup canvasGroup;
@@ -23,6 +24,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (image != null && newItem != null)
             image.sprite = newItem.image;
     }
+    public void SetDragParent(RectTransform parent) => dragParent = parent;
 
     private void Awake()
     {
@@ -37,34 +39,28 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (canvas == null)
-            return;
-
         parentAfterDrag = transform.parent;
 
-        transform.SetParent(canvas.transform, true);
+        if (dragParent != null)
+            transform.SetParent(dragParent, true);
+
         transform.SetAsLastSibling();
 
-        if (image != null)
-            image.raycastTarget = false;
-
-        if (canvasGroup != null)
-            canvasGroup.blocksRaycasts = false;
+        if (image != null) image.raycastTarget = false;
+        if (canvasGroup != null) canvasGroup.blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (canvas == null || rectTransform == null)
-            return;
+        if (rectTransform == null) return;
 
-        RectTransform canvasRect = canvas.transform as RectTransform;
-        if (canvasRect == null)
-            return;
+        RectTransform space = dragParent != null ? dragParent : (rectTransform.root as RectTransform);
+        if (space == null) return;
 
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRect,
+                space,
                 eventData.position,
-                eventData.pressEventCamera,
+                null, // overlay
                 out Vector2 localPoint))
         {
             rectTransform.anchoredPosition = localPoint;
