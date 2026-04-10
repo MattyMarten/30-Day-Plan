@@ -18,14 +18,27 @@ public class GridInventory : MonoBehaviour
     [SerializeField] private Item[] possibleItems;
 
     [Header("Placement Preview")]
-    [SerializeField] private RectTransform highlightRoot;   // child under grid
+    [SerializeField] private RectTransform rarityHighlightRoot;
+    [SerializeField] private RectTransform placementHighlightRoot;
+    [SerializeField] private Image rarityTilePrefab;
+    [SerializeField] private Image placementTilePrefab;
     [SerializeField] private Image highlightTilePrefab;     // 64x64 image prefab
     [SerializeField] private Color validColor = new Color(0f, 1f, 0f, 0.25f); //green
     [SerializeField] private Color invalidColor = new Color(1f, 0f, 0f, 0.25f); //red
     [SerializeField] private Color swapColor = new Color(1f, 0.5f, 0f, 0.25f); //orange
 
-    private readonly List<Image> highlightPool = new();
-    private int highlightUsed;
+    [Header("Rarity Tile Colors")]
+    [SerializeField] private Color commonTileColor = new Color(0.45f, 0.45f, 0.45f, 0.25f); // gray
+    [SerializeField] private Color uncommonTileColor = new Color(0.20f, 0.45f, 1.00f, 0.25f); // blue
+    [SerializeField] private Color rareTileColor = new Color(1.00f, 0.35f, 0.75f, 0.25f); // pink-ish
+    [SerializeField] private Color legendaryTileColor = new Color(1.00f, 0.80f, 0.15f, 0.25f); // gold
+    [SerializeField] private Color cursedTileColor = new Color(0.60f, 0.20f, 0.85f, 0.25f); // purple
+
+    private readonly List<Image> rarityPool = new();
+    private int rarityUsed;
+
+    private readonly List<Image> placementPool = new();
+    private int placementUsed;
 
     private void Awake()
     {
@@ -287,73 +300,63 @@ public class GridInventory : MonoBehaviour
 
     public void ClearPlacementPreview()
     {
-        for (int i = 0; i < highlightUsed; i++)
-            highlightPool[i].gameObject.SetActive(false);
+        for (int i = 0; i < placementUsed; i++)
+            placementPool[i].gameObject.SetActive(false);
 
-        highlightUsed = 0;
+        placementUsed = 0;
     }
 
     public void ShowPlacementPreview(InventoryLoot item, int topLeftX, int topLeftY)
     {
-        ClearPlacementPreview();
+        // Only clears placement (not rarity)
+        for (int i = 0; i < placementUsed; i++)
+            placementPool[i].gameObject.SetActive(false);
+        placementUsed = 0;
 
-        if (item == null)
-            return;
-
-        if (highlightRoot == null || highlightTilePrefab == null)
+        if (item == null || placementHighlightRoot == null || placementTilePrefab == null)
             return;
 
         Color col;
-
         if (Fits(item, topLeftX, topLeftY))
-        {
             col = validColor;
-        }
         else if (TryGetSingleOverlappedItem(item, topLeftX, topLeftY, out InventoryLoot overlapped) &&
                  CanPlaceIgnoring(item, topLeftX, topLeftY, overlapped))
-        {
-            col = swapColor; // orange = swappable
-        }
+            col = swapColor;
         else
-        {
-            col = invalidColor; // truly cannot place
-        }
+            col = invalidColor;
 
         foreach (var cell in GetFootprintCells(item))
         {
             int gx = topLeftX + cell.x;
             int gy = topLeftY + cell.y;
+            if (!IsInBounds(gx, gy)) continue;
 
-            if (!IsInBounds(gx, gy))
-                continue;
+            Image img;
+            if (placementUsed >= placementPool.Count)
+            {
+                img = Instantiate(placementTilePrefab, placementHighlightRoot);
+                img.raycastTarget = false;
+                placementPool.Add(img);
+            }
+            else
+            {
+                img = placementPool[placementUsed];
+                img.transform.SetParent(placementHighlightRoot, false);
+            }
+            placementUsed++;
 
-            Image img = GetHighlightTile();
             img.color = col;
 
             RectTransform rt = img.rectTransform;
-            rt.SetParent(highlightRoot, false);
-
             rt.anchorMin = new Vector2(0f, 1f);
             rt.anchorMax = new Vector2(0f, 1f);
             rt.pivot = new Vector2(0f, 1f);
 
-            rt.anchoredPosition = new Vector2(gx * tileSizeWidth, -(gy * tileSizeHeight));
-            rt.sizeDelta = new Vector2(tileSizeWidth, tileSizeHeight);
+            rt.anchoredPosition = new Vector2(gx * 64f, -(gy * 64f));
+            rt.sizeDelta = new Vector2(64f, 64f);
 
             img.gameObject.SetActive(true);
         }
-    }
-
-    private Image GetHighlightTile()
-    {
-        if (highlightUsed >= highlightPool.Count)
-        {
-            Image created = Instantiate(highlightTilePrefab);
-            created.raycastTarget = false;
-            highlightPool.Add(created);
-        }
-
-        return highlightPool[highlightUsed++];
     }
 
     public bool TryFindItemTopLeftAt(Vector2Int anyCell, out InventoryLoot item, out Vector2Int topLeft)
@@ -456,4 +459,67 @@ public class GridInventory : MonoBehaviour
         Destroy(loot.gameObject);
         return false;
     }
+
+    private Color GetRarityColor(InventoryLoot loot)
+    {
+        if (loot == null || loot.item == null)
+            return commonTileColor;
+
+        return loot.item.rarity switch
+        {
+            ItemRarity.Common => commonTileColor,
+            ItemRarity.Uncommon => uncommonTileColor,
+            ItemRarity.Rare => rareTileColor,
+            ItemRarity.Legendary => legendaryTileColor,
+            ItemRarity.Cursed => cursedTileColor,
+            _ => commonTileColor
+        };
+    }
+
+    public void ShowRarityTiles(InventoryLoot ignore = null)
+    {
+        // Only clears rarity (not placement)
+        for (int i = 0; i < rarityUsed; i++)
+            rarityPool[i].gameObject.SetActive(false);
+        rarityUsed = 0;
+
+        int width = inventoryLootSlot.GetLength(0);
+        int height = inventoryLootSlot.GetLength(1);
+
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+            {
+                InventoryLoot loot = inventoryLootSlot[x, y];
+                if (loot == null || loot == ignore)
+                    continue;
+
+                Image img;
+                if (rarityUsed >= rarityPool.Count)
+                {
+                    img = Instantiate(rarityTilePrefab, rarityHighlightRoot);
+                    img.raycastTarget = false;
+                    rarityPool.Add(img);
+                }
+                else
+                {
+                    img = rarityPool[rarityUsed];
+                    img.transform.SetParent(rarityHighlightRoot, false);
+                }
+                rarityUsed++;
+
+                img.color = GetRarityColor(loot);
+
+                RectTransform rt = img.rectTransform;
+                rt.anchorMin = new Vector2(0f, 1f);
+                rt.anchorMax = new Vector2(0f, 1f);
+                rt.pivot = new Vector2(0f, 1f);
+
+                rt.anchoredPosition = new Vector2(x * 64f, -(y * 64f));
+                rt.sizeDelta = new Vector2(64f, 64f);
+
+                img.gameObject.SetActive(true);
+            }
+    }
+    
+
 }

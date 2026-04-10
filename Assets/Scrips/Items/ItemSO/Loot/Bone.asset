@@ -10,15 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e4c84999fe768e4dbc7b1507142ea87, type: 3}
-  m_Name: Coin
+  m_Name: Bone
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  itemName: Coin
+  itemName: Bone
   type: 0
+  rarity: 1
   heldPrefab: {fileID: 0}
-  image: {fileID: 21300000, guid: bccb0de56fe4ebc46b4731f3c69746e3, type: 3}
-  imageR90: {fileID: 0}
+  image: {fileID: 21300000, guid: 92395a4eb2de2f8448a2c1c6e503ec45, type: 3}
+  imageR90: {fileID: 21300000, guid: 49f69116dab078b49b87f05217cc8fb7, type: 3}
   itemIcon: {fileID: 0}
-  sizeWidth: 1
-  sizeHeight: 1
-  occupiedCells: []
+  sizeWidth: 2
+  sizeHeight: 3
+  occupiedCells:
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 0, y: 1}
+  - {x: 0, y: 2}
+  - {x: 1, y: 3}
+  - {x: 1, y: 3}
   actionType: 4

@@ -101,33 +101,34 @@ public class GridInventoryControls : MonoBehaviour
 
     private void UpdatePlacementPreview()
     {
-       if (heldItem == null)
-        {
-            if (selectedGrid != null)
-                selectedGrid.ClearPlacementPreview();
-            hasPreview = false;
-            return;
-        }
-        // Only show preview if we are actually hovering a grid AND the mouse is inside its rect
         if (selectedGrid == null)
             return;
 
-        Vector2 mousePos = GetMouseScreenPosition();
+        // Always show rarity, skipping the held item so its overlay doesn't double
+        selectedGrid.ShowRarityTiles(heldItem);
 
-        if (!selectedGrid.TryGetTile(mousePos, out Vector2Int hoveredTile))
+        // Only show placement overlay if holding and inside grid
+        if (heldItem != null)
         {
+            Vector2 mousePos = GetMouseScreenPosition();
+            if (selectedGrid.TryGetTile(mousePos, out Vector2Int hoveredTile))
+            {
+                Vector2Int topLeft = selectedGrid.GetTopLeftForCenteredPlacement(hoveredTile, heldItem);
+                selectedGrid.ShowPlacementPreview(heldItem, topLeft.x, topLeft.y);
+                lastPreviewTopLeft = topLeft;
+                hasPreview = true;
+            }
+            else
+            {
+                selectedGrid.ClearPlacementPreview(); // Only clears drag (not rarity)
+                hasPreview = false;
+            }
+        }
+        else
+        {
+            // Not holding anything: clear placement preview overlay
             selectedGrid.ClearPlacementPreview();
             hasPreview = false;
-            return;
-        }
-
-        Vector2Int topLeft = selectedGrid.GetTopLeftForCenteredPlacement(hoveredTile, heldItem);
-
-        if (!hasPreview || topLeft != lastPreviewTopLeft)
-        {
-            selectedGrid.ShowPlacementPreview(heldItem, topLeft.x, topLeft.y);
-            lastPreviewTopLeft = topLeft;
-            hasPreview = true;
         }
     }
 
@@ -225,6 +226,7 @@ public class GridInventoryControls : MonoBehaviour
             originTopLeft = bTopLeft;
             hasOrigin = true;
 
+            selectedGrid.ClearPlacementPreview(); 
             hasPreview = false;
 
             return;

@@ -10,20 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e4c84999fe768e4dbc7b1507142ea87, type: 3}
-  m_Name: Pipe
+  m_Name: Panda
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  itemName: Pipe
+  itemName: panda
   type: 0
-  rarity: 3
+  rarity: 2
   heldPrefab: {fileID: 0}
-  image: {fileID: 21300000, guid: 9b2609fd89fc96a42ae06d03a0287115, type: 3}
-  imageR90: {fileID: 21300000, guid: 19f23fd8c867a124ebfcc7e738fc6e9f, type: 3}
+  image: {fileID: 21300000, guid: 5754e411483f480478104599a5fa677d, type: 3}
+  imageR90: {fileID: 21300000, guid: 11806026ee39fb540aa0bb1ad0273fa1, type: 3}
   itemIcon: {fileID: 0}
-  sizeWidth: 3
+  sizeWidth: 2
   sizeHeight: 2
-  occupiedCells:
-  - {x: 0, y: 0}
-  - {x: 1, y: 0}
-  - {x: 2, y: 0}
-  - {x: 0, y: 1}
-  actionType: 0
+  occupiedCells: []
+  actionType: 4
