@@ -7,6 +7,7 @@ public class Item : ScriptableObject
     [Header("Item Info")]
     public string itemName;
     public ItemType type;
+    public ItemRarity rarity = ItemRarity.Common;
 
     [Header("Held Object")]
     public GameObject heldPrefab;
@@ -64,5 +65,14 @@ public enum ActionType
     Open,
     Use,
     Pickup,
+}
+
+public enum ItemRarity
+{
+    Common,
+    Uncommon,
+    Rare,
+    Legendary,
+    Cursed
 }
 

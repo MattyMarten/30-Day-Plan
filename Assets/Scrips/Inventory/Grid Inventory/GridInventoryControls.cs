@@ -101,14 +101,13 @@ public class GridInventoryControls : MonoBehaviour
 
     private void UpdatePlacementPreview()
     {
-        if (heldItem == null)
+       if (heldItem == null)
         {
             if (selectedGrid != null)
                 selectedGrid.ClearPlacementPreview();
             hasPreview = false;
             return;
         }
-
         // Only show preview if we are actually hovering a grid AND the mouse is inside its rect
         if (selectedGrid == null)
             return;
@@ -148,6 +147,7 @@ public class GridInventoryControls : MonoBehaviour
             // Attempt placement
             Vector2Int topLeft = selectedGrid.GetTopLeftForCenteredPlacement(hoveredTile, heldItem);
 
+            // 1) Normal placement (no overlap)
             if (selectedGrid.TryPlaceItem(heldItem, topLeft.x, topLeft.y))
             {
                 heldItem = null;
@@ -157,7 +157,75 @@ public class GridInventoryControls : MonoBehaviour
 
                 selectedGrid.ClearPlacementPreview();
                 hasPreview = false;
+                return;
             }
+
+            // 2) If normal placement failed, allow placing ON TOP of exactly one other item (B),
+            // no matter which part overlaps.
+            InventoryLoot overlappedItem = null;
+            Vector2Int overlappedCell = default;
+            bool hasOverlappedCell = false;
+
+            // Scan A's footprint cells at the intended placement.
+            foreach (var cell in selectedGrid.GetFootprintCellsPublic(heldItem))
+            {
+                int gx = topLeft.x + cell.x;
+                int gy = topLeft.y + cell.y;
+
+                InventoryLoot at = selectedGrid.GetItemAt(gx, gy);
+                if (at == null)
+                    continue;
+
+                if (overlappedItem == null)
+                {
+                    overlappedItem = at;
+                    overlappedCell = new Vector2Int(gx, gy);
+                    hasOverlappedCell = true;
+                }
+                else if (overlappedItem != at)
+                {
+                    // Overlaps more than one item -> not allowed
+                    overlappedItem = null;
+                    hasOverlappedCell = false;
+                    break;
+                }
+            }
+
+            if (!hasOverlappedCell || overlappedItem == null)
+                return;
+
+            // Check: would placement be valid if B was removed?
+            if (!selectedGrid.CanPlaceIgnoring(heldItem, topLeft.x, topLeft.y, overlappedItem))
+                return;
+
+            // Find B's top-left (so cancel can return it)
+            if (!selectedGrid.TryFindItemTopLeftAt(overlappedCell, out _, out Vector2Int bTopLeft))
+                return;
+
+            // Remove B
+            InventoryLoot pickedB = selectedGrid.PickUpLoot(overlappedCell.x, overlappedCell.y);
+            if (pickedB == null)
+                return;
+
+            // Place A
+            InventoryLoot a = heldItem;
+            if (!selectedGrid.TryPlaceItem(a, topLeft.x, topLeft.y))
+            {
+                // Rollback: put B back and keep holding A
+                selectedGrid.TryPlaceItem(pickedB, bTopLeft.x, bTopLeft.y);
+                return;
+            }
+
+            // Now hold B
+            heldItem = pickedB;
+            heldItemRect = heldItem.GetComponent<RectTransform>();
+            heldItemRect.SetAsLastSibling();
+
+            originGrid = selectedGrid;
+            originTopLeft = bTopLeft;
+            hasOrigin = true;
+
+            hasPreview = false;
 
             return;
         }

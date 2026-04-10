@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   itemName: Pipe
   type: 0
+  rarity: 3
   heldPrefab: {fileID: 0}
   image: {fileID: 21300000, guid: 9b2609fd89fc96a42ae06d03a0287115, type: 3}
   imageR90: {fileID: 21300000, guid: 19f23fd8c867a124ebfcc7e738fc6e9f, type: 3}

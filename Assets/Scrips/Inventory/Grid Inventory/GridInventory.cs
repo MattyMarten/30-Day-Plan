@@ -20,8 +20,9 @@ public class GridInventory : MonoBehaviour
     [Header("Placement Preview")]
     [SerializeField] private RectTransform highlightRoot;   // child under grid
     [SerializeField] private Image highlightTilePrefab;     // 64x64 image prefab
-    [SerializeField] private Color validColor = new Color(0f, 1f, 0f, 0.25f);
-    [SerializeField] private Color invalidColor = new Color(1f, 0f, 0f, 0.25f);
+    [SerializeField] private Color validColor = new Color(0f, 1f, 0f, 0.25f); //green
+    [SerializeField] private Color invalidColor = new Color(1f, 0f, 0f, 0.25f); //red
+    [SerializeField] private Color swapColor = new Color(1f, 0.5f, 0f, 0.25f); //orange
 
     private readonly List<Image> highlightPool = new();
     private int highlightUsed;
@@ -69,6 +70,42 @@ public class GridInventory : MonoBehaviour
             return false;
 
         tile = new Vector2Int(x, y);
+        return true;
+    }
+
+    public InventoryLoot GetItemAt(int x, int y)
+    {
+        if (!IsInBounds(x, y)) return null;
+        return inventoryLootSlot[x, y];
+    }
+
+    public IEnumerable<Vector2Int> GetFootprintCellsPublic(InventoryLoot loot)
+    {
+        return GetFootprintCells(loot);
+    }
+
+    public bool CanPlaceIgnoring(InventoryLoot item, int x, int y, InventoryLoot ignore)
+    {
+        if (item == null) return false;
+
+        GetRotatedSize(item, out int w, out int h);
+
+        if (!IsInBounds(x, y)) return false;
+        if (!IsInBounds(x + w - 1, y + h - 1)) return false;
+
+        foreach (var cell in GetFootprintCells(item))
+        {
+            int gx = x + cell.x;
+            int gy = y + cell.y;
+
+            if (!IsInBounds(gx, gy))
+                return false;
+
+            InventoryLoot at = inventoryLootSlot[gx, gy];
+            if (at != null && at != ignore)
+                return false;
+        }
+
         return true;
     }
 
@@ -208,6 +245,34 @@ public class GridInventory : MonoBehaviour
         return item;
     }
 
+    private bool TryGetSingleOverlappedItem(InventoryLoot placingItem, int topLeftX, int topLeftY, out InventoryLoot overlapped)
+    {
+        overlapped = null;
+        if (placingItem == null) return false;
+
+        foreach (var cell in GetFootprintCells(placingItem))
+        {
+            int gx = topLeftX + cell.x;
+            int gy = topLeftY + cell.y;
+
+            if (!IsInBounds(gx, gy))
+                return false; // out of bounds -> treat as not swappable
+
+            InventoryLoot at = inventoryLootSlot[gx, gy];
+            if (at == null)
+                continue;
+
+            if (overlapped == null) overlapped = at;
+            else if (overlapped != at)
+            {
+                overlapped = null; // overlaps multiple items
+                return false;
+            }
+        }
+
+        return overlapped != null;
+    }
+
     public Vector2Int GetTopLeftForCenteredPlacement(Vector2Int hoveredTile, InventoryLoot item)
     {
         GetRotatedSize(item, out int w, out int h);
@@ -238,8 +303,21 @@ public class GridInventory : MonoBehaviour
         if (highlightRoot == null || highlightTilePrefab == null)
             return;
 
-        bool fits = Fits(item, topLeftX, topLeftY);
-        Color col = fits ? validColor : invalidColor;
+        Color col;
+
+        if (Fits(item, topLeftX, topLeftY))
+        {
+            col = validColor;
+        }
+        else if (TryGetSingleOverlappedItem(item, topLeftX, topLeftY, out InventoryLoot overlapped) &&
+                 CanPlaceIgnoring(item, topLeftX, topLeftY, overlapped))
+        {
+            col = swapColor; // orange = swappable
+        }
+        else
+        {
+            col = invalidColor; // truly cannot place
+        }
 
         foreach (var cell in GetFootprintCells(item))
         {

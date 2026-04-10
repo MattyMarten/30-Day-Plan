@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   itemName: Cross
   type: 0
+  rarity: 2
   heldPrefab: {fileID: 0}
-  image: {fileID: 21300000, guid: 6a32ec39e5a4ba547af084455f540bed, type: 3}
-  imageR90: {fileID: 21300000, guid: 3d97dcf148077144ca1403a019662096, type: 3}
+  image: {fileID: 21300000, guid: 0d26277ad9aa1b34b8cad873abf3f393, type: 3}
+  imageR90: {fileID: 21300000, guid: 912c29b8e5bbf704fa22bbcd5e179db7, type: 3}
   itemIcon: {fileID: 0}
   sizeWidth: 1
   sizeHeight: 2
