@@ -40,6 +40,10 @@ public class GridInventory : MonoBehaviour
     private readonly List<Image> placementPool = new();
     private int placementUsed;
 
+    private int hoverX = -1, hoverY = -1;
+    public void SetHoverTile(int x, int y) { hoverX = x; hoverY = y; }
+    public void ClearHoverTile() { hoverX = hoverY = -1; }
+
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -519,7 +523,72 @@ public class GridInventory : MonoBehaviour
 
                 img.gameObject.SetActive(true);
             }
-    }
-    
 
+        // ---- Draw hover highlight OFFICIALLY here, after rarity loop! ----
+        if (hoverX >= 0 && hoverY >= 0 && IsInBounds(hoverX, hoverY) && inventoryLootSlot[hoverX, hoverY] != null)
+        {
+            // Use placement overlay pool for white hover highlight
+            // (Don't clear the pool here; let the controller clear placementPool as before ShowPlacementPreview)
+            Image img;
+            if (placementUsed >= placementPool.Count)
+            {
+                img = Instantiate(placementTilePrefab, placementHighlightRoot);
+                img.raycastTarget = false;
+                placementPool.Add(img);
+            }
+            else
+            {
+                img = placementPool[placementUsed];
+                img.transform.SetParent(placementHighlightRoot, false);
+            }
+            placementUsed++;
+
+            img.color = new Color(1f, 1f, 1f, 0.4f); // white highlight
+
+            RectTransform rt = img.rectTransform;
+            rt.anchorMin = new Vector2(0f, 1f);
+            rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = new Vector2(0f, 1f);
+
+            rt.anchoredPosition = new Vector2(hoverX * 64f, -(hoverY * 64f));
+            rt.sizeDelta = new Vector2(64f, 64f);
+
+            img.gameObject.SetActive(true);
+        }
+    }
+    public void ShowHoverHighlight()
+    {
+        // Only one highlight, so clear only this one!
+        for (int i = 0; i < placementUsed; i++)
+            placementPool[i].gameObject.SetActive(false);
+        placementUsed = 0;
+
+        if (hoverX >= 0 && hoverY >= 0 && IsInBounds(hoverX, hoverY) && inventoryLootSlot[hoverX, hoverY] != null)
+        {
+            Image img;
+            if (placementUsed >= placementPool.Count)
+            {
+                img = Instantiate(placementTilePrefab, placementHighlightRoot);
+                img.raycastTarget = false;
+                placementPool.Add(img);
+            }
+            else
+            {
+                img = placementPool[placementUsed];
+                img.transform.SetParent(placementHighlightRoot, false);
+            }
+            placementUsed++;
+
+            img.color = new Color(1f, 1f, 1f, 0.4f); // white
+
+            RectTransform rt = img.rectTransform;
+            rt.anchorMin = new Vector2(0f, 1f);
+            rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = new Vector2(hoverX * 64f, -(hoverY * 64f));
+            rt.sizeDelta = new Vector2(64f, 64f);
+
+            img.gameObject.SetActive(true);
+        }
+    }
 }

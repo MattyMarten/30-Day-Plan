@@ -52,6 +52,16 @@ namespace StarterAssets
         [Header("UI")]
         public bool uiBlocked;
 
+        public Vector2 MousePosition {
+    get {
+#if ENABLE_INPUT_SYSTEM
+        return Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+#else
+        return Input.mousePosition;
+#endif
+    }
+}
+
 #if ENABLE_INPUT_SYSTEM
 
         public void OnMove(InputValue value)

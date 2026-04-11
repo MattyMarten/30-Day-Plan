@@ -1,5 +1,7 @@
 using UnityEngine;
 using StarterAssets;
+using System.Linq;
+using YourNamespace; // Replace 'YourNamespace' with the actual namespace containing WorldPickup
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -34,6 +36,8 @@ public class GridInventoryControls : MonoBehaviour
     // Placement preview caching
     private Vector2Int lastPreviewTopLeft;
     private bool hasPreview;
+
+    public GameObject tooltipPanel;
 
     public void SetUIOpen(bool open)
     {
@@ -77,6 +81,39 @@ public class GridInventoryControls : MonoBehaviour
         UpdateDragFollow();
         UpdatePlacementPreview();
 
+        if (selectedGrid != null && heldItem == null)
+        {
+            Vector2 mousePos = GetMouseScreenPosition();
+            if (selectedGrid.TryGetTile(mousePos, out Vector2Int hoveredTile))
+            {
+                InventoryLoot loot = selectedGrid.GetItemAt(hoveredTile.x, hoveredTile.y);
+                if (loot != null)
+                {
+                    selectedGrid.SetHoverTile(hoveredTile.x, hoveredTile.y);
+
+                    if (heldItem == null)
+                        selectedGrid.ShowHoverHighlight();
+
+                    ShowItemTooltip(loot, mousePos);
+                }
+                else
+                {
+                    selectedGrid.ClearHoverTile();
+                    HideItemTooltip();
+                }
+            }
+            else
+            {
+                selectedGrid.ClearHoverTile();
+                HideItemTooltip();
+            }
+        }
+        else if (selectedGrid != null)
+        {
+            selectedGrid.ClearHoverTile();
+            HideItemTooltip();
+        }
+
         if (allowRotation && heldItem != null && WasRotateKeyThisFrame())
         {
             heldItem.RotateClockwise();
@@ -87,6 +124,9 @@ public class GridInventoryControls : MonoBehaviour
 
         if (WasLeftClickThisFrame())
             HandleLeftClick();
+
+        if (heldItem != null)
+            HideItemTooltip();
     }
 
     private void UpdateDragFollow()
@@ -104,7 +144,7 @@ public class GridInventoryControls : MonoBehaviour
         if (selectedGrid == null)
             return;
 
-        // Always show rarity, skipping the held item so its overlay doesn't double
+        selectedGrid.ClearPlacementPreview();
         selectedGrid.ShowRarityTiles(heldItem);
 
         // Only show placement overlay if holding and inside grid
@@ -115,19 +155,15 @@ public class GridInventoryControls : MonoBehaviour
             {
                 Vector2Int topLeft = selectedGrid.GetTopLeftForCenteredPlacement(hoveredTile, heldItem);
                 selectedGrid.ShowPlacementPreview(heldItem, topLeft.x, topLeft.y);
-                lastPreviewTopLeft = topLeft;
                 hasPreview = true;
             }
             else
             {
-                selectedGrid.ClearPlacementPreview(); // Only clears drag (not rarity)
                 hasPreview = false;
             }
         }
         else
         {
-            // Not holding anything: clear placement preview overlay
-            selectedGrid.ClearPlacementPreview();
             hasPreview = false;
         }
     }
@@ -141,7 +177,7 @@ public class GridInventoryControls : MonoBehaviour
         {
             if (selectedGrid == null || !selectedGrid.TryGetTile(mousePos, out Vector2Int hoveredTile))
             {
-                ReturnHeldItemToOrigin();
+                DropHeldItem(); // Removes from inventory/UI
                 return;
             }
 
@@ -282,6 +318,54 @@ public class GridInventoryControls : MonoBehaviour
             selectedGrid.ClearPlacementPreview();
         hasPreview = false;
     }
+
+    private void DropHeldItem()
+    {
+        if (heldItem != null)
+        {
+            // Drop the item at the player's position (this script is on the player)
+            Vector3 dropPosition = transform.position;
+            dropPosition.y += 0.5f; 
+
+            var dropPrefab = heldItem.item.dropPrefab;
+            if (dropPrefab != null)
+            {
+                var dropped = Instantiate(dropPrefab, dropPosition, Quaternion.identity);
+
+                // (Optional) Set up the item data if necessary for pickup scripts
+                var pickupScript = dropped.GetComponent<WorldPickup>();
+                if (pickupScript != null)
+                    pickupScript.itemData = heldItem.item;
+            }
+
+            Destroy(heldItem.gameObject);
+            heldItem = null;
+            heldItemRect = null;
+            originGrid = null;
+            hasOrigin = false;
+            hasPreview = false;
+        }
+    }
+
+    void ShowItemTooltip(InventoryLoot loot, Vector2 mousePos)
+    {
+        tooltipPanel.SetActive(true);
+        tooltipPanel.transform.position = mousePos + new Vector2(20, -20);
+        tooltipPanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text =
+            $"{loot.item.itemName}\n{loot.item.rarity}\n{GetMaterialSummary(loot.item)}";
+    }
+
+    void HideItemTooltip()
+    {
+        tooltipPanel.SetActive(false);
+    }
+
+string GetMaterialSummary(Item item)
+{
+    if (item.materialValue == null || item.materialValue.Count == 0)
+        return "None";
+    return string.Join(", ", item.materialValue.Select(kv => $"{kv.Value}x{kv.Key}"));
+}
 
     private static Vector2 GetMouseScreenPosition()
     {

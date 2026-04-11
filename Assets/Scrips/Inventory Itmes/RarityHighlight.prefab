@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3845418948620540154}
   - component: {fileID: 6458548521946236058}
   m_Layer: 0
-  m_Name: HighLightTilePrefab
+  m_Name: RarityHighlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6016f0e3f05508e4ab1ae0edec0bf44b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a0273ca778669da4da9f70558770ab88, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
