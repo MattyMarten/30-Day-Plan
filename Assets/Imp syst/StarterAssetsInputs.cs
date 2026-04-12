@@ -38,6 +38,8 @@ namespace StarterAssets
         public bool Quests;
         public bool RandomLoot;
 
+        public bool SkipMessage;
+
         [Header("One Frame Actions")]
         public bool inventory;
         public bool interact;
@@ -157,6 +159,11 @@ namespace StarterAssets
             // UI input; allow while uiBlocked
             if (value.isPressed) Quests = true;
         }
+        public void OnSkipMessage(InputValue value)
+        {
+            // UI input; allow while uiBlocked
+            if (value.isPressed) SkipMessage = true;
+        }
 
 #endif
 
@@ -186,6 +193,7 @@ namespace StarterAssets
         public void MapInput(bool newState) => Map = newState;
         public void KeyitemInput(bool newState) => Keyitem = newState;
         public void QuestsInput(bool newState) => Quests = newState;
+        public void SkipMessageInput(bool newState) => SkipMessage = newState;
 
         // Optional convenience APIs: consuming clears the flag for you.
         public bool ConsumeInventory()
@@ -242,6 +250,12 @@ namespace StarterAssets
             RandomLoot = false;
             return true;
         }
+        public bool ConsumeSkipMessage()
+        {
+            if (!SkipMessage) return false;
+            SkipMessage = false;
+            return true;
+        }
 
         public void ClearOneFrameInputs()
         {
@@ -253,6 +267,7 @@ namespace StarterAssets
             Map = false;
             Keyitem = false;
             Quests = false;
+            SkipMessage = false;
 
             Slot0 = false;
             Slot1 = false;

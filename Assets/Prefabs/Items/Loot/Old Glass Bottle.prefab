@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1551911180686803859}
   - component: {fileID: 5321515050631860401}
   - component: {fileID: 3273666893314293588}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 7293603343278318619}
   - component: {fileID: 5171966431457301166}
   - component: {fileID: 1508870575508520754}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Old Glass Bottle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

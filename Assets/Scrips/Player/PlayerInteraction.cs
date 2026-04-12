@@ -55,8 +55,26 @@ public class PlayerInteraction : MonoBehaviour
 
         bool hasTarget = Physics.SphereCast(ray, sphereRadius, out RaycastHit hit, interactDistance, interactLayer, QueryTriggerInteraction.Collide);
 
+        GrinderMachine grinder = hasTarget ? hit.collider.GetComponentInParent<GrinderMachine>() : null;
+
+        if (grinder != null)
+        {
+            // Show a "Press [E] to Grind All" prompt
+            interactText.SetActive(true);
+
+            // Check for interact input (E or other)
+            if (input.ConsumeInteract()) // or your Input System action for interact
+            {
+                grinder.GrindAllItems();
+            }
+        }
+        else
+        {
+            interactText.SetActive(false);
+        }
+
         ItemPickup pickup = hasTarget ? hit.collider.GetComponentInParent<ItemPickup>() : null;
-        // ... rest unchanged ...
+
         bool lookingAtPickup = pickup != null;
 
         // UI Prompt logic
@@ -74,12 +92,12 @@ public class PlayerInteraction : MonoBehaviour
         // Update the info panel if active
         if (pickupInfoPanel != null && pickup.Item != null)
         {
-            itemNameText.text = pickup.Item.itemName;
+            itemNameText.text = pickup.Item.itemName + "\n" + FormatMaterialValue(pickup.Item);
             string htmlColor = ColorUtility.ToHtmlStringRGB(pickup.Item.RarityColor);
             itemRarityText.text = $"<color=#{htmlColor}>{pickup.Item.rarity}</color>";
             itemSpriteImage.sprite = pickup.Item.image;
             rarityBackground.color = pickup.Item.RarityColor; // uses your new property!
-            materialValueText.text = FormatMaterialValue(pickup.Item);
+            
         }
 
         // Handle the interact input for pickup

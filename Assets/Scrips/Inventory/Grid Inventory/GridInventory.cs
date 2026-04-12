@@ -6,8 +6,9 @@ public class GridInventory : MonoBehaviour
 {
     private const float tileSizeWidth = 64f;
     private const float tileSizeHeight = 64f;
+    public PlayerInventory playerInventory;
 
-    private InventoryLoot[,] inventoryLootSlot;
+    // private InventoryLoot[,] inventoryLootSlot;
     private RectTransform rectTransform;
 
     [SerializeField] private int gridSizeWidth = 10;
@@ -47,21 +48,24 @@ public class GridInventory : MonoBehaviour
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        Init(gridSizeWidth, gridSizeHeight);
+        if (playerInventory == null)
+            Debug.LogError("PlayerInventory reference not set!");
+        else
+            Init(playerInventory.gridWidth, playerInventory.gridHeight);
     }
 
     private void Init(int width, int height)
     {
-        inventoryLootSlot = new InventoryLoot[width, height];
+        playerInventory.gridItems = new InventoryLoot[width, height];
         rectTransform.sizeDelta = new Vector2(width * tileSizeWidth, height * tileSizeHeight);
     }
 
     private bool IsInBounds(int x, int y)
     {
-        return inventoryLootSlot != null &&
+        return playerInventory.gridItems != null &&
                x >= 0 && y >= 0 &&
-               x < inventoryLootSlot.GetLength(0) &&
-               y < inventoryLootSlot.GetLength(1);
+               x < playerInventory.gridItems.GetLength(0) &&
+               y < playerInventory.gridItems.GetLength(1);
     }
 
     public bool TryGetTile(Vector2 screenMousePos, out Vector2Int tile)
@@ -93,7 +97,7 @@ public class GridInventory : MonoBehaviour
     public InventoryLoot GetItemAt(int x, int y)
     {
         if (!IsInBounds(x, y)) return null;
-        return inventoryLootSlot[x, y];
+        return playerInventory.gridItems[x, y];
     }
 
     public IEnumerable<Vector2Int> GetFootprintCellsPublic(InventoryLoot loot)
@@ -118,7 +122,7 @@ public class GridInventory : MonoBehaviour
             if (!IsInBounds(gx, gy))
                 return false;
 
-            InventoryLoot at = inventoryLootSlot[gx, gy];
+            InventoryLoot at = playerInventory.gridItems[gx, gy];
             if (at != null && at != ignore)
                 return false;
         }
@@ -204,7 +208,7 @@ public class GridInventory : MonoBehaviour
             if (!IsInBounds(gx, gy))
                 return false;
 
-            if (inventoryLootSlot[gx, gy] != null)
+            if (playerInventory.gridItems[gx, gy] != null)
                 return false;
         }
 
@@ -216,7 +220,7 @@ public class GridInventory : MonoBehaviour
         GetRotatedSize(item, out int w, out int h);
 
         foreach (var cell in GetFootprintCells(item))
-            inventoryLootSlot[x + cell.x, y + cell.y] = item;
+            playerInventory.gridItems[x + cell.x, y + cell.y] = item;
 
         RectTransform lootRect = item.GetComponent<RectTransform>();
         lootRect.SetParent(rectTransform);
@@ -246,13 +250,13 @@ public class GridInventory : MonoBehaviour
     {
         if (!IsInBounds(x, y)) return null;
 
-        InventoryLoot item = inventoryLootSlot[x, y];
+        InventoryLoot item = playerInventory.gridItems[x, y];
         if (item == null) return null;
 
-        for (int ix = 0; ix < inventoryLootSlot.GetLength(0); ix++)
-        for (int iy = 0; iy < inventoryLootSlot.GetLength(1); iy++)
-            if (inventoryLootSlot[ix, iy] == item)
-                inventoryLootSlot[ix, iy] = null;
+        for (int ix = 0; ix < playerInventory.gridItems.GetLength(0); ix++)
+        for (int iy = 0; iy < playerInventory.gridItems.GetLength(1); iy++)
+            if (playerInventory.gridItems[ix, iy] == item)
+                playerInventory.gridItems[ix, iy] = null;
 
         return item;
     }
@@ -270,7 +274,7 @@ public class GridInventory : MonoBehaviour
             if (!IsInBounds(gx, gy))
                 return false; // out of bounds -> treat as not swappable
 
-            InventoryLoot at = inventoryLootSlot[gx, gy];
+            InventoryLoot at = playerInventory.gridItems[gx, gy];
             if (at == null)
                 continue;
 
@@ -366,7 +370,7 @@ public class GridInventory : MonoBehaviour
         if (!IsInBounds(anyCell.x, anyCell.y))
             return false;
 
-        item = inventoryLootSlot[anyCell.x, anyCell.y];
+        item = playerInventory.gridItems[anyCell.x, anyCell.y];
         if (item == null)
             return false;
 
@@ -374,10 +378,10 @@ public class GridInventory : MonoBehaviour
         int minX = int.MaxValue;
         int minY = int.MaxValue;
 
-        for (int x = 0; x < inventoryLootSlot.GetLength(0); x++)
-            for (int y = 0; y < inventoryLootSlot.GetLength(1); y++)
+        for (int x = 0; x < playerInventory.gridItems.GetLength(0); x++)
+            for (int y = 0; y < playerInventory.gridItems.GetLength(1); y++)
             {
-                if (inventoryLootSlot[x, y] != item)
+                if (playerInventory.gridItems[x, y] != item)
                     continue;
 
                 if (x < minX) minX = x;
@@ -395,8 +399,8 @@ public class GridInventory : MonoBehaviour
         topLeft = default;
         if (item == null) return false;
 
-        int width = inventoryLootSlot.GetLength(0);
-        int height = inventoryLootSlot.GetLength(1);
+        int width = playerInventory.gridItems.GetLength(0);
+        int height = playerInventory.gridItems.GetLength(1);
 
         for (int y = 0; y < height; y++)        // top to bottom
         {
@@ -458,6 +462,7 @@ public class GridInventory : MonoBehaviour
         Destroy(loot.gameObject);
         return false;
     }
+    
 
     private Color GetRarityColor(InventoryLoot loot)
     {
@@ -482,13 +487,13 @@ public class GridInventory : MonoBehaviour
             rarityPool[i].gameObject.SetActive(false);
         rarityUsed = 0;
 
-        int width = inventoryLootSlot.GetLength(0);
-        int height = inventoryLootSlot.GetLength(1);
+        int width = playerInventory.gridItems.GetLength(0);
+        int height = playerInventory.gridItems.GetLength(1);
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
             {
-                InventoryLoot loot = inventoryLootSlot[x, y];
+                InventoryLoot loot = playerInventory.gridItems[x, y];
                 if (loot == null || loot == ignore)
                     continue;
 
@@ -520,7 +525,7 @@ public class GridInventory : MonoBehaviour
             }
 
         // ---- Draw hover highlight OFFICIALLY here, after rarity loop! ----
-        if (hoverX >= 0 && hoverY >= 0 && IsInBounds(hoverX, hoverY) && inventoryLootSlot[hoverX, hoverY] != null)
+        if (hoverX >= 0 && hoverY >= 0 && IsInBounds(hoverX, hoverY) && playerInventory.gridItems[hoverX, hoverY] != null)
         {
             // Use placement overlay pool for white hover highlight
             // (Don't clear the pool here; let the controller clear placementPool as before ShowPlacementPreview)
@@ -558,7 +563,7 @@ public class GridInventory : MonoBehaviour
             placementPool[i].gameObject.SetActive(false);
         placementUsed = 0;
 
-        if (hoverX >= 0 && hoverY >= 0 && IsInBounds(hoverX, hoverY) && inventoryLootSlot[hoverX, hoverY] != null)
+        if (hoverX >= 0 && hoverY >= 0 && IsInBounds(hoverX, hoverY) && playerInventory.gridItems[hoverX, hoverY] != null)
         {
             Image img;
             if (placementUsed >= placementPool.Count)
@@ -585,5 +590,25 @@ public class GridInventory : MonoBehaviour
 
             img.gameObject.SetActive(true);
         }
+    }
+    public void RefreshGridUI()
+    {
+        // Destroy or deactivate all current UI item icons
+        foreach (Transform child in rectTransform)
+            Destroy(child.gameObject);
+
+        // Place icons according to player inventory data
+        for (int x = 0; x < playerInventory.gridWidth; x++)
+            for (int y = 0; y < playerInventory.gridHeight; y++)
+            {
+                var loot = playerInventory.gridItems[x, y];
+                if (loot != null)
+                {
+                    // Instantiate, set sprite, position, etc. for display
+                    InventoryLoot icon = Instantiate(inventoryLootPrefab, rectTransform);
+                    icon.Apply(loot.item); // If you have an Apply() method
+                    icon.GetComponent<RectTransform>().anchoredPosition = new Vector2(x * 64, -y * 64);
+                }
+            }
     }
 }

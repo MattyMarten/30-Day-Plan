@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8682050060895555194}
   - component: {fileID: 6203224093681572984}
   - component: {fileID: 7520717604993241855}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Rubber Ducky
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,7 +82,7 @@ GameObject:
   - component: {fileID: 9138792334591739898}
   - component: {fileID: 6183968913986537040}
   - component: {fileID: 8543669108582442102}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

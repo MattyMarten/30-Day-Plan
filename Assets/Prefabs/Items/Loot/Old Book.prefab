@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6359320883131786025}
   - component: {fileID: 64302832455746275}
   - component: {fileID: 56563822481657124}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 2480645857141111839}
   - component: {fileID: 5895607168222276619}
   - component: {fileID: 9203101382003531871}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Old Book
   m_TagString: Untagged
   m_Icon: {fileID: 0}

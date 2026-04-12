@@ -221,6 +221,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SkipMessage",
+                    "type": "Button",
+                    "id": "c9255ad9-e3d4-45ab-9ec9-d95ddb1a53bd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -650,6 +659,45 @@
                     "processors": "",
                     "groups": "",
                     "action": "RandomLoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6c825054-8753-4243-b5ca-b281d7f6751d",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkipMessage",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Debug",
+            "id": "3f0bd50b-398d-4fd2-8bc4-d32341da0875",
+            "actions": [
+                {
+                    "name": "DebugInventory",
+                    "type": "Button",
+                    "id": "ba6f833b-7c0b-44af-815f-3b956fb0c98a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "df7777d6-abda-4756-b106-c38a73284d56",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugInventory",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

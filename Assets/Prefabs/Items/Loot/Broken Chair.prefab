@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5421634260594486368}
   - component: {fileID: 7512595832417730654}
   - component: {fileID: 6277504579419825843}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Broken Chair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,7 +82,7 @@ GameObject:
   - component: {fileID: 6782472740588677581}
   - component: {fileID: 8739073924316094037}
   - component: {fileID: 7150052375872166891}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
