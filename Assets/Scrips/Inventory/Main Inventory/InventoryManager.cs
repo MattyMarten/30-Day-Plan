@@ -100,10 +100,6 @@ public class InventoryManager : MonoBehaviour
         HandleScrollInput();
     }
 
-    // =========================
-    // Public API
-    // =========================
-
     public void SelectSlot(int slotIndex)
     {
         ChangeSelectedSlotIfValid(slotIndex);

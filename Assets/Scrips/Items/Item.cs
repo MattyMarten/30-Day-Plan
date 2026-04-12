@@ -8,7 +8,22 @@ public class Item : ScriptableObject
     [Header("Item Info")]
     public string itemName;
     public ItemType type;
-    public ItemRarity rarity = ItemRarity.Common;
+    public ItemRarity rarity = ItemRarity.Junk;
+    public Color RarityColor
+{
+    get
+    {
+        switch (rarity)
+        {
+            case ItemRarity.Junk:      return new Color(0.5f, 0.5f, 0.5f, 0.25f); // gray
+            case ItemRarity.Valuable:  return new Color(0.2f, 0.8f, 0.3f, 0.25f); // green
+            case ItemRarity.Unusual:   return new Color(0.25f, 0.55f, 1.0f, 0.25f); // blue
+            case ItemRarity.Exotic:    return new Color(1.00f, 0.80f, 0.15f, 0.25f); // gold
+            case ItemRarity.Cursed:    return new Color(0.7f, 0.2f, 0.3f, 0.25f); // dark red/purple
+            default:                   return Color.white;
+        }
+    }
+}
 
     [Header("Held Object")]
     public GameObject heldPrefab;
@@ -39,8 +54,19 @@ public class Item : ScriptableObject
     [Header("Material Value")]
     public List<MaterialAmount> materialAmounts = new List<MaterialAmount>();
 
-    [HideInInspector]
-    public Dictionary<RawMaterial, int> materialValue = new Dictionary<RawMaterial, int>();
+    public Dictionary<RawMaterial, int> MaterialValue
+    {
+        get
+        {
+            var dict = new Dictionary<RawMaterial, int>();
+            foreach (var entry in materialAmounts)
+            {
+                if (entry.amount > 0)
+                    dict[entry.material] = entry.amount;
+            }
+            return dict;
+        }
+    }
 
     private void OnValidate()
     {
@@ -58,18 +84,10 @@ public class Item : ScriptableObject
                 Debug.LogWarning($"{name}: occupiedCells[{i}] = {c} is outside bounds (0..{sizeWidth - 1}, 0..{sizeHeight - 1}). It will be ignored at runtime.", this);
             }
         }
-
-        // Build the dictionary:
-        materialValue.Clear();
-        foreach (var entry in materialAmounts)
-        {
-            if (entry.amount > 0)
-                materialValue[entry.material] = entry.amount;
-        }
-    }
+    } 
 }
 
 public enum ItemType { Loot, Utility, KeyItem, Armor }
 public enum ActionType { Flashlight, Hit, Open, Use, Pickup }
-public enum ItemRarity { Common, Uncommon, Rare, Legendary, Cursed }
-public enum RawMaterial { None, Wood, Stone, Metal, Cloth, Leather, Iron }
+public enum ItemRarity { Junk, Valuable, Unusual, Exotic, Cursed }
+public enum RawMaterial { None, Wood, Scrap, Cloth, Glass, Rubber, Plastic, Paper}

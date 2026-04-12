@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 2168468243623300310}
   - component: {fileID: 4894207480459664036}
   - component: {fileID: 8718677566284628920}
-  m_Layer: 0
+  - component: {fileID: 3013919792174488438}
+  m_Layer: 8
   m_Name: Toy train
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5349103539473678918}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 30.465965, y: 0.44436356, z: 54.23924}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -106,10 +107,24 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2045900629190155230, guid: 361f95ea108047b49985fe6c291b0a72, type: 3}
+--- !u!114 &3013919792174488438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5349103539473678918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ab697e4a46c7dd4281b2d311ca62a78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  item: {fileID: 11400000, guid: 05e94f305eb232546ac6a14aaf8da164, type: 2}
+  autoHoldOnPickup: 1

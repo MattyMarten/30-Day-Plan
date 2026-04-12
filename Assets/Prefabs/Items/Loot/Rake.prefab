@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 1483200722298383529}
   - component: {fileID: 4545432519276181539}
   - component: {fileID: 1928740606475101001}
-  m_Layer: 0
+  - component: {fileID: 4229334040901818747}
+  m_Layer: 8
   m_Name: Rake
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5481898596014598560}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 37.129417, y: 1.1796827, z: 54.425373}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
@@ -106,10 +107,24 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2138800642770189401, guid: 0eea13ccb382e404396b3765b3266095, type: 3}
+--- !u!114 &4229334040901818747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5481898596014598560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ab697e4a46c7dd4281b2d311ca62a78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  item: {fileID: 11400000, guid: 315993d8ac56d3e47abfc2087f927251, type: 2}
+  autoHoldOnPickup: 1

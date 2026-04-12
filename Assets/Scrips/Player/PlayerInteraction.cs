@@ -1,5 +1,6 @@
 using UnityEngine;
 using StarterAssets;
+using System.Linq;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -16,6 +17,14 @@ public class PlayerInteraction : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject interactText;
 
+    [Header("Interact UI")]
+    [SerializeField] private GameObject pickupInfoPanel;
+    [SerializeField] private TMPro.TextMeshProUGUI itemNameText;
+    [SerializeField] private TMPro.TextMeshProUGUI itemRarityText;
+    [SerializeField] private UnityEngine.UI.Image itemSpriteImage;
+    [SerializeField] private UnityEngine.UI.Image rarityBackground;
+    [SerializeField] private TMPro.TextMeshProUGUI materialValueText;
+
     private void Awake()
     {
         if (input == null)
@@ -29,35 +38,51 @@ public class PlayerInteraction : MonoBehaviour
 
         if (interactText != null)
             interactText.SetActive(false);
+        if (pickupInfoPanel != null)
+            pickupInfoPanel.SetActive(false);
     }
 
     private void Update()
     {
         if (input == null || playerCamera == null)
         {
-            if (interactText != null) interactText.SetActive(false);
+            SetUI(false);
             return;
         }
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        float sphereRadius = 0.4f;
 
-        bool hasTarget = Physics.Raycast(ray, out RaycastHit hit, interactDistance, interactLayer, QueryTriggerInteraction.Ignore);
+        bool hasTarget = Physics.SphereCast(ray, sphereRadius, out RaycastHit hit, interactDistance, interactLayer, QueryTriggerInteraction.Collide);
 
-        if (!hasTarget)
-        {
-            if (interactText != null) interactText.SetActive(false);
+        ItemPickup pickup = hasTarget ? hit.collider.GetComponentInParent<ItemPickup>() : null;
+        // ... rest unchanged ...
+        bool lookingAtPickup = pickup != null;
+
+        // UI Prompt logic
+        if (interactText != null)
+            interactText.SetActive(lookingAtPickup);
+
+        // Pickup info panel logic
+        if (pickupInfoPanel != null)
+            pickupInfoPanel.SetActive(lookingAtPickup);
+
+        // If not looking at a pickup, we're done for this frame
+        if (!lookingAtPickup)
             return;
+
+        // Update the info panel if active
+        if (pickupInfoPanel != null && pickup.Item != null)
+        {
+            itemNameText.text = pickup.Item.itemName;
+            string htmlColor = ColorUtility.ToHtmlStringRGB(pickup.Item.RarityColor);
+            itemRarityText.text = $"<color=#{htmlColor}>{pickup.Item.rarity}</color>";
+            itemSpriteImage.sprite = pickup.Item.image;
+            rarityBackground.color = pickup.Item.RarityColor; // uses your new property!
+            materialValueText.text = FormatMaterialValue(pickup.Item);
         }
 
-        ItemPickup pickup = hit.collider.GetComponentInParent<ItemPickup>();
-        if (pickup == null)
-        {
-            if (interactText != null) interactText.SetActive(false);
-            return;
-        }
-
-        if (interactText != null) interactText.SetActive(true);
-
+        // Handle the interact input for pickup
         if (input.ConsumeInteract())
         {
             if (inventoryManager == null)
@@ -68,5 +93,21 @@ public class PlayerInteraction : MonoBehaviour
 
             pickup.PickUp(inventoryManager, playerHoldItem);
         }
+    }
+
+    private void SetUI(bool status)
+    {
+        if (interactText != null)
+            interactText.SetActive(status);
+        if (pickupInfoPanel != null)
+            pickupInfoPanel.SetActive(status);
+    }
+
+    // Example for materials
+    private string FormatMaterialValue(Item item)
+    {
+        if (item.MaterialValue == null || item.MaterialValue.Count == 0)
+            return "No materials";
+        return string.Join(", ", item.MaterialValue.Select(kv => $"{kv.Value}x {kv.Key}"));
     }
 }

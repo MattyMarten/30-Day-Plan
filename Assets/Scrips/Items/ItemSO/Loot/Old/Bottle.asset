@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4c84999fe768e4dbc7b1507142ea87, type: 3}
+  m_Name: Bottle
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemName: Bottle
+  type: 0
+  rarity: 4
+  heldPrefab: {fileID: 0}
+  dropPrefab: {fileID: 7450260240529410105, guid: 527351ca915493443bd9e70d140ffb64, type: 3}
+  image: {fileID: 21300000, guid: 208c553b1e924cb47aa8b865314ed61f, type: 3}
+  imageR90: {fileID: 21300000, guid: 47e8039f481ab5d4fb91683c369d5643, type: 3}
+  itemIcon: {fileID: 0}
+  sizeWidth: 1
+  sizeHeight: 2
+  occupiedCells: []
+  actionType: 4
+  materialAmounts: []

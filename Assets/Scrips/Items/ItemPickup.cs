@@ -9,6 +9,10 @@ public class ItemPickup : MonoBehaviour
     [Tooltip("If true, item will also equip/hold the heldPrefab when picked up.")]
     [SerializeField] private bool autoHoldOnPickup = true;
 
+    public Item Item => item;
+
+    public void SetItem(Item newItem) => item = newItem;
+
     public void PickUp(InventoryManager inventoryManager, PlayerHoldItem playerHoldItem)
     {
         if (item == null)

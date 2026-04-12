@@ -182,12 +182,7 @@ public class GridInventory : MonoBehaviour
         }
 
         foreach (var c in loot.item.occupiedCells)
-        {
-            if (c.x < 0 || c.y < 0 || c.x >= baseW || c.y >= baseH)
-                continue;
-
-            yield return RotateCell(c, baseW, baseH, loot.rotation);
-        }
+        yield return RotateCell(c, baseW, baseH, loot.rotation);
     }
 
     // ---- Placement ----
@@ -471,10 +466,10 @@ public class GridInventory : MonoBehaviour
 
         return loot.item.rarity switch
         {
-            ItemRarity.Common => commonTileColor,
-            ItemRarity.Uncommon => uncommonTileColor,
-            ItemRarity.Rare => rareTileColor,
-            ItemRarity.Legendary => legendaryTileColor,
+            ItemRarity.Junk => commonTileColor,
+            ItemRarity.Valuable => uncommonTileColor,
+            ItemRarity.Unusual => rareTileColor,
+            ItemRarity.Exotic => legendaryTileColor,
             ItemRarity.Cursed => cursedTileColor,
             _ => commonTileColor
         };

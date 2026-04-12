@@ -1,7 +1,6 @@
 using UnityEngine;
 using StarterAssets;
 using System.Linq;
-using YourNamespace; // Replace 'YourNamespace' with the actual namespace containing WorldPickup
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -319,40 +318,40 @@ public class GridInventoryControls : MonoBehaviour
         hasPreview = false;
     }
 
-    private void DropHeldItem()
+  private void DropHeldItem()
+{
+    if (heldItem != null)
     {
-        if (heldItem != null)
+        Vector3 dropPosition = transform.position;
+        dropPosition.y += -0.1f; // Small offset so it doesn't spawn inside the floor (adjust if needed)
+
+        var dropPrefab = heldItem.item.dropPrefab;
+        if (dropPrefab != null)
         {
-            // Drop the item at the player's position (this script is on the player)
-            Vector3 dropPosition = transform.position;
-            dropPosition.y += 0.5f; 
+            var dropped = Instantiate(dropPrefab, dropPosition, Quaternion.identity);
 
-            var dropPrefab = heldItem.item.dropPrefab;
-            if (dropPrefab != null)
-            {
-                var dropped = Instantiate(dropPrefab, dropPosition, Quaternion.identity);
-
-                // (Optional) Set up the item data if necessary for pickup scripts
-                var pickupScript = dropped.GetComponent<WorldPickup>();
-                if (pickupScript != null)
-                    pickupScript.itemData = heldItem.item;
-            }
-
-            Destroy(heldItem.gameObject);
-            heldItem = null;
-            heldItemRect = null;
-            originGrid = null;
-            hasOrigin = false;
-            hasPreview = false;
+            // Optionally assign the item data to the drop
+            var pickup = dropped.GetComponent<ItemPickup>();
+            if (pickup != null)
+                pickup.SetItem(heldItem.item);
         }
+
+        Destroy(heldItem.gameObject);
+        heldItem = null;
+        heldItemRect = null;
+        originGrid = null;
+        hasOrigin = false;
+        hasPreview = false;
     }
+}
 
     void ShowItemTooltip(InventoryLoot loot, Vector2 mousePos)
     {
         tooltipPanel.SetActive(true);
         tooltipPanel.transform.position = mousePos + new Vector2(20, -20);
-        tooltipPanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text =
-            $"{loot.item.itemName}\n{loot.item.rarity}\n{GetMaterialSummary(loot.item)}";
+        var t = tooltipPanel.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+        string htmlColor = ColorUtility.ToHtmlStringRGB(loot.item.RarityColor);
+        t.text = $"{loot.item.itemName}\n<color=#{htmlColor}>{loot.item.rarity}</color>\n{GetMaterialSummary(loot.item)}";
     }
 
     void HideItemTooltip()
@@ -362,9 +361,9 @@ public class GridInventoryControls : MonoBehaviour
 
 string GetMaterialSummary(Item item)
 {
-    if (item.materialValue == null || item.materialValue.Count == 0)
+    if (item.MaterialValue == null || item.MaterialValue.Count == 0)
         return "None";
-    return string.Join(", ", item.materialValue.Select(kv => $"{kv.Value}x{kv.Key}"));
+    return string.Join(", ", item.MaterialValue.Select(kv => $"{kv.Value}x{kv.Key}"));
 }
 
     private static Vector2 GetMouseScreenPosition()
