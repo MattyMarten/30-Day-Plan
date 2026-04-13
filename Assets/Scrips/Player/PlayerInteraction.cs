@@ -16,6 +16,9 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject interactText;
+    [SerializeField] private GameObject storageUIPanel;          // assign your UI Panel
+    [SerializeField] private RawMaterialStorage storage;         // assign your storage chest
+
 
     [Header("Interact UI")]
     [SerializeField] private GameObject pickupInfoPanel;
@@ -24,6 +27,10 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private UnityEngine.UI.Image itemSpriteImage;
     [SerializeField] private UnityEngine.UI.Image rarityBackground;
     [SerializeField] private TMPro.TextMeshProUGUI materialValueText;
+    [SerializeField] private GameObject grinderPromptPanel;
+    [SerializeField] private TMPro.TextMeshProUGUI grinderPromptText;
+    [SerializeField] private GameObject storagePromptPanel;      // assign "PRESS E TO OPEN STORAGE" panel (optional)
+    [SerializeField] private TMPro.TextMeshProUGUI storagePromptText;
 
     private void Awake()
     {
@@ -40,8 +47,13 @@ public class PlayerInteraction : MonoBehaviour
             interactText.SetActive(false);
         if (pickupInfoPanel != null)
             pickupInfoPanel.SetActive(false);
+        if (storageUIPanel != null)
+            storageUIPanel.SetActive(false);
+        if (storagePromptPanel != null)
+            storagePromptPanel.SetActive(false);
     }
 
+    [System.Obsolete]
     private void Update()
     {
         if (input == null || playerCamera == null)
@@ -50,28 +62,63 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
+        if (storageUIPanel != null && storageUIPanel.activeSelf)
+        {
+            if (input.ConsumeInteract())
+            {
+                storageUIPanel.SetActive(false);
+                return; // Stop further input processing this frame
+            }
+        }
+
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         float sphereRadius = 0.4f;
 
         bool hasTarget = Physics.SphereCast(ray, sphereRadius, out RaycastHit hit, interactDistance, interactLayer, QueryTriggerInteraction.Collide);
 
-        GrinderMachine grinder = hasTarget ? hit.collider.GetComponentInParent<GrinderMachine>() : null;
+        RawMaterialStorage storageChest = hasTarget ? hit.collider.GetComponentInParent<RawMaterialStorage>() : null;
 
-        if (grinder != null)
+        bool lookingAtStorage = storageChest != null;
+
+        if (storagePromptPanel != null)
+            storagePromptPanel.SetActive(lookingAtStorage);
+
+        if (storagePromptText != null)
+            storagePromptText.text = lookingAtStorage ? "OPEN STORAGE" : "";
+
+        if (lookingAtStorage && input.ConsumeInteract())
         {
-            // Show a "Press [E] to Grind All" prompt
-            interactText.SetActive(true);
+            if (storageUIPanel != null) storageUIPanel.SetActive(true);
 
-            // Check for interact input (E or other)
-            if (input.ConsumeInteract()) // or your Input System action for interact
+            var storageUI = storageUIPanel.GetComponent<MaterialStorageUI>();
+            if (storageUI != null)
             {
-                grinder.GrindAllItems();
+                storageUI.storage = storageChest.GetComponent<RawMaterialStorage>();
+                storageUI.RefreshUI();
             }
         }
-        else
+
+
+
+        GrinderMachine grinder = hasTarget ? hit.collider.GetComponentInParent<GrinderMachine>() : null;
+
+        bool lookingAtGrinder = grinder != null;
+
+        if (grinderPromptPanel != null)
+            grinderPromptPanel.SetActive(lookingAtGrinder);
+
+        if (grinderPromptText != null)
+            grinderPromptText.text = lookingAtGrinder ? "GRIND" : "";
+
+        if (lookingAtGrinder)
         {
-            interactText.SetActive(false);
+            if (input.ConsumeInteract())
+            {
+                grinder.GrindAllItems();
+                grinderPromptPanel.SetActive(false); // Hide after grinding
+            }
         }
+
 
         ItemPickup pickup = hasTarget ? hit.collider.GetComponentInParent<ItemPickup>() : null;
 

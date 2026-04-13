@@ -1,62 +1,99 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro; // For UI
+using StarterAssets;
 
 public class GrinderMachine : MonoBehaviour
 {
     [Header("References")]
     public PlayerInventory playerInventory; // Drag in Editor or auto-find
     public GridInventory gridInventory;     // Add this reference if you want to auto-refresh grid UI
+    public StarterAssetsInputs input;
+    public RawMaterialStorage storage;
 
     [Header("UI")]
     public GameObject summaryPanel;
     public TMP_Text summaryText;
 
-    void Awake()
+    [Header("Timer")]
+    public float messageTimer = 20f; // How long to show the results (seconds)
+
+    private float messageTimerEnd = -1f; // Internal: time when the panel should hide
+
+
+
+   void Awake()
     {
-        if (playerInventory == null)
-            playerInventory = FindObjectOfType<PlayerInventory>();
-        if (gridInventory == null)
-            gridInventory = FindObjectOfType<GridInventory>();
+        if (summaryPanel != null) summaryPanel.SetActive(false); // Start hidden
     }
 
+    void Update()
+    {
+        if (summaryPanel != null && summaryPanel.activeSelf)
+        {
+            // Close if timer expired
+            if (messageTimerEnd > 0f && Time.time >= messageTimerEnd)
+                HideSummary();
+
+            // Close if player presses X (or whatever SkipMessage is)
+            if (input.ConsumeSkipMessage())
+                HideSummary();
+        }
+    }
+
+
     // Call this function (e.g., from a button) to grind all inventory
+    [System.Obsolete]
     public void GrindAllItems()
     {
-        if (playerInventory == null) return;
+        if (playerInventory == null || storage == null) return;
 
-        // Track what materials we got
+        // 1. Track what materials we got
         Dictionary<RawMaterial, int> resultMaterials = new();
 
-        // We'll keep track of which items we've already removed (for multi-cell)
         HashSet<InventoryLoot> removedLoot = new();
 
         for (int x = 0; x < playerInventory.gridWidth; x++)
-        for (int y = 0; y < playerInventory.gridHeight; y++)
-        {
-            var loot = playerInventory.gridItems[x, y];
-            if (loot != null && loot.item != null && !removedLoot.Contains(loot))
+            for (int y = 0; y < playerInventory.gridHeight; y++)
             {
-                // Add materials for this item
-                foreach (var pair in loot.item.MaterialValue)
+                var loot = playerInventory.gridItems[x, y];
+                if (loot != null && loot.item != null && !removedLoot.Contains(loot))
                 {
-                    if (!resultMaterials.ContainsKey(pair.Key))
-                        resultMaterials[pair.Key] = 0;
-                    resultMaterials[pair.Key] += pair.Value;
+                    foreach (var pair in loot.item.MaterialValue)
+                    {
+                        if (!resultMaterials.ContainsKey(pair.Key))
+                            resultMaterials[pair.Key] = 0;
+                        resultMaterials[pair.Key] += pair.Value;
+                    }
+                    playerInventory.RemoveMultiCellItem(loot);
+                    removedLoot.Add(loot);
                 }
-                // Remove from all cells and prevent double-count
-                playerInventory.RemoveMultiCellItem(loot);
-                removedLoot.Add(loot);
             }
+
+        // 2. Now add results to storage
+        foreach (var kvp in resultMaterials)
+            storage.Add(kvp.Key, kvp.Value);
+
+        // 3. Log the updated storage contents
+        foreach (var kvp in storage.GetAll())
+        {
+            Debug.Log($"Storage: {kvp.Key}: {kvp.Value}");
         }
 
-        // Show result in UI
+        // 4. Refresh UI if open
+        var storageUI = FindObjectOfType<MaterialStorageUI>();
+        if (storageUI != null && storageUI.gameObject.activeInHierarchy)
+        {
+            storageUI.RefreshUI();
+        }
+
+        // 5. Show grind summary
         ShowSummary(resultMaterials);
-        // Optionally, trigger inventory UI grid refresh here if needed
+
+        // 6. Optional: refresh grid UI
         if (gridInventory != null)
             gridInventory.RefreshGridUI();
     }
-
     public void ShowSummary(Dictionary<RawMaterial, int> materials)
     {
         if (summaryPanel != null) summaryPanel.SetActive(true);
@@ -76,11 +113,17 @@ public class GrinderMachine : MonoBehaviour
             }
             summaryText.text = summary;
         }
+
+        // Start the timer
+        messageTimerEnd = Time.time + messageTimer;
     }
 
-    // Optionally, a button to close the panel
     public void HideSummary()
     {
-        if (summaryPanel != null) summaryPanel.SetActive(false);
+        if (summaryPanel != null)
+        {
+            summaryPanel.SetActive(false);
+            messageTimerEnd = -1f; // Stop the timer
+        }
     }
 }

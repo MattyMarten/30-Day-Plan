@@ -311,6 +311,7 @@ public class GridInventory : MonoBehaviour
 
     public void ShowPlacementPreview(InventoryLoot item, int topLeftX, int topLeftY)
     {
+        PurgeDestroyedImages(placementPool);
         // Only clears placement (not rarity)
         for (int i = 0; i < placementUsed; i++)
             placementPool[i].gameObject.SetActive(false);
@@ -347,6 +348,9 @@ public class GridInventory : MonoBehaviour
                 img.transform.SetParent(placementHighlightRoot, false);
             }
             placementUsed++;
+
+            if (img == null || img.Equals(null))
+            continue;
 
             img.color = col;
 
@@ -482,6 +486,7 @@ public class GridInventory : MonoBehaviour
 
     public void ShowRarityTiles(InventoryLoot ignore = null)
     {
+        PurgeDestroyedImages(rarityPool);
         // Only clears rarity (not placement)
         for (int i = 0; i < rarityUsed; i++)
             rarityPool[i].gameObject.SetActive(false);
@@ -510,6 +515,9 @@ public class GridInventory : MonoBehaviour
                     img.transform.SetParent(rarityHighlightRoot, false);
                 }
                 rarityUsed++;
+
+                if (img == null || img.Equals(null))
+                continue;
 
                 img.color = GetRarityColor(loot);
 
@@ -543,6 +551,9 @@ public class GridInventory : MonoBehaviour
             }
             placementUsed++;
 
+            if (img == null || img.Equals(null))
+            return;
+
             img.color = new Color(1f, 1f, 1f, 0.4f); // white highlight
 
             RectTransform rt = img.rectTransform;
@@ -558,6 +569,7 @@ public class GridInventory : MonoBehaviour
     }
     public void ShowHoverHighlight()
     {
+        PurgeDestroyedImages(placementPool);
         // Only one highlight, so clear only this one!
         for (int i = 0; i < placementUsed; i++)
             placementPool[i].gameObject.SetActive(false);
@@ -579,6 +591,9 @@ public class GridInventory : MonoBehaviour
             }
             placementUsed++;
 
+            if (img == null || img.Equals(null))
+            return;
+
             img.color = new Color(1f, 1f, 1f, 0.4f); // white
 
             RectTransform rt = img.rectTransform;
@@ -597,6 +612,11 @@ public class GridInventory : MonoBehaviour
         foreach (Transform child in rectTransform)
             Destroy(child.gameObject);
 
+            rarityPool.Clear();
+            placementPool.Clear();
+            rarityUsed = 0;
+            placementUsed = 0;
+
         // Place icons according to player inventory data
         for (int x = 0; x < playerInventory.gridWidth; x++)
             for (int y = 0; y < playerInventory.gridHeight; y++)
@@ -610,5 +630,14 @@ public class GridInventory : MonoBehaviour
                     icon.GetComponent<RectTransform>().anchoredPosition = new Vector2(x * 64, -y * 64);
                 }
             }
+    }
+
+    private void PurgeDestroyedImages(List<Image> pool)
+    {
+        for (int i = pool.Count - 1; i >= 0; i--)
+        {
+            if (pool[i] == null || pool[i].Equals(null))
+                pool.RemoveAt(i);
+        }
     }
 }
