@@ -31,6 +31,8 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI grinderPromptText;
     [SerializeField] private GameObject storagePromptPanel;      // assign "PRESS E TO OPEN STORAGE" panel (optional)
     [SerializeField] private TMPro.TextMeshProUGUI storagePromptText;
+    [SerializeField] private GameObject craftingUIPanel;       // assign the Crafting Canvas panel here
+    [SerializeField] private CraftingStationUI craftingUI;     // assign the CraftingStationUI script
 
     private void Awake()
     {
@@ -43,14 +45,12 @@ public class PlayerInteraction : MonoBehaviour
         if (playerCamera == null)
             playerCamera = Camera.main;
 
-        if (interactText != null)
-            interactText.SetActive(false);
-        if (pickupInfoPanel != null)
-            pickupInfoPanel.SetActive(false);
-        if (storageUIPanel != null)
-            storageUIPanel.SetActive(false);
-        if (storagePromptPanel != null)
-            storagePromptPanel.SetActive(false);
+        if (interactText != null)              interactText.SetActive(false);
+        if (pickupInfoPanel != null)           pickupInfoPanel.SetActive(false);
+        if (storageUIPanel != null)            storageUIPanel.SetActive(false);
+        if (storagePromptPanel != null)        storagePromptPanel.SetActive(false);
+        if (grinderPromptPanel != null)        grinderPromptPanel.SetActive(false);
+        if (craftingUIPanel != null)           craftingUIPanel.SetActive(false);
     }
 
     [System.Obsolete]
@@ -96,6 +96,26 @@ public class PlayerInteraction : MonoBehaviour
                 storageUI.storage = storageChest.GetComponent<RawMaterialStorage>();
                 storageUI.RefreshUI();
             }
+        }
+
+        CraftingTable craftingTable = hasTarget ? hit.collider.GetComponentInParent<CraftingTable>() : null;
+
+        bool lookingAtCrafting = craftingTable != null;
+
+        if (craftingUIPanel != null && craftingUIPanel.activeSelf)
+        {
+            if (input.ConsumeInteract())
+            {
+                craftingUIPanel.SetActive(false);
+                return;
+            }
+        }
+
+        if (lookingAtCrafting && input.ConsumeInteract())
+        {
+            if (craftingUIPanel != null) craftingUIPanel.SetActive(true);
+            if (craftingUI != null) craftingUI.RefreshUI();
+            return; // Avoid accidental double-input in the same frame
         }
 
 
