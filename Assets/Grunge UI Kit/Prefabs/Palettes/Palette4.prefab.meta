@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e6e70ce283a8446b8a671cf1c01c63d0
+labels:
+- Color
+- Palette
+timeCreated: 1446673932
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Palettes/Palette4.prefab
+  uploadId: 172037

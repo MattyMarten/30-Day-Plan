@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: 982e8a97e59b249d58f96ad4693b5552
+labels:
+- Scrollbar
+- Menu
+- HUD
+- Prefabs
+- UGUI
+- Interface
+- GUI
+- UI
+- Grunge
+timeCreated: 1444950400
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Scrollbars/Scrollbar2.prefab
+  uploadId: 172037

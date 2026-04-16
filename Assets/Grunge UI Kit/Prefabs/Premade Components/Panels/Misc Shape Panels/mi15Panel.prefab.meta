@@ -1,0 +1,35 @@
+fileFormatVersion: 2
+guid: 80840b3f2f9e54e709aad79800843fe6
+labels:
+- Dirt
+- GUI
+- Gritty
+- Grunge
+- HUD
+- Horror
+- Interface
+- Panels
+- Prefabs
+- Rough
+- Scary
+- Texture
+- UGUI
+- UI
+- chalk
+- damaged
+- distressed
+- grainy
+- scratch
+timeCreated: 1491452528
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Panels/Misc Shape Panels/mi15Panel.prefab
+  uploadId: 172037

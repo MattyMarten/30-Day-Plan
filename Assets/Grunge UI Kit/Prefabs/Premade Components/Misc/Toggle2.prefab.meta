@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 62d8d46065c53442d9e71355a8b318e3
+labels:
+- Toggle
+- Menu
+- HUD
+- UGUI
+- UI
+- Grunge
+- Prefabs
+timeCreated: 1446526849
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Misc/Toggle2.prefab
+  uploadId: 172037

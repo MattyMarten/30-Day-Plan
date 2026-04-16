@@ -1,0 +1,37 @@
+fileFormatVersion: 2
+guid: 717fe972bd05a4be897aa03dcd505c15
+labels:
+- Grunge
+- GrungeUIKit
+- UI
+- GUI
+- Horror
+- User
+- Interface
+- Rough
+- Blood
+- Gritty
+- Buttons
+- Circle
+- Damaged
+- Dirt
+- Destroyed
+- UGUI
+- Prefabs
+- Old
+- Splatter
+- HUD
+- PixelPerfect
+timeCreated: 1446518149
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Buttons/Circle Button/cr3Button.prefab
+  uploadId: 172037

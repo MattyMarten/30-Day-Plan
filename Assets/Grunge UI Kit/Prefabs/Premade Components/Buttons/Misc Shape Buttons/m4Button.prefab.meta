@@ -1,0 +1,33 @@
+fileFormatVersion: 2
+guid: ad4b9ac9a501c4375886112ca9ad6c43
+labels:
+- HUD
+- Splatter
+- Old
+- Scary
+- Shapes
+- Prefabs
+- Destroyed
+- UGUI
+- Damaged
+- Dirt
+- Buttons
+- Gritty
+- Rough
+- Interface
+- UI
+- GUI
+- Grunge
+timeCreated: 1446519577
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Buttons/Misc Shape Buttons/m4Button.prefab
+  uploadId: 172037

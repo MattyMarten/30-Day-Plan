@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: de02829fd834340d09738fc9da599327
+labels:
+- Grunge
+- UI
+- GUI
+- Rough
+- Gritty
+- Panels
+- Icons
+- Damaged
+- Dirt
+- UGUI
+- Prefabs
+- Menu
+- HUD
+timeCreated: 1446519093
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Icons/ic11.prefab
+  uploadId: 172037

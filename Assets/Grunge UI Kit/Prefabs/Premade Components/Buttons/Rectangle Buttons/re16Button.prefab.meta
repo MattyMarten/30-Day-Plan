@@ -1,0 +1,35 @@
+fileFormatVersion: 2
+guid: 2248d1c50e7d74d8d92d5ebc48449b3a
+labels:
+- Grunge
+- UI
+- GUI
+- Horror
+- User
+- Interface
+- Rough
+- Blood
+- Gritty
+- Buttons
+- Dirt
+- Damaged
+- Destroyed
+- UGUI
+- Prefabs
+- Sliced
+- Scary
+- Menu
+- HUD
+timeCreated: 1446413903
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Buttons/Rectangle Buttons/re16Button.prefab
+  uploadId: 172037

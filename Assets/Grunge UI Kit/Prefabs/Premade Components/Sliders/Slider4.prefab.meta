@@ -1,0 +1,33 @@
+fileFormatVersion: 2
+guid: 63bb010304f49492ba141af0df198541
+labels:
+- Slider
+- Menu
+- HUD
+- Scary
+- Old
+- Prefabs
+- UGUI
+- Damaged
+- Dirt
+- Interface
+- User
+- Horror
+- GUI
+- UI
+- Gritty
+- Rough
+- Grunge
+timeCreated: 1446521741
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Sliders/Slider4.prefab
+  uploadId: 172037

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 557f9c322fc754b0cb7651b861ecc1a8
+timeCreated: 1444868271
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Source Files/Fonts/Frijole Font/FrijoleLicense_OFL.txt
+  uploadId: 172037

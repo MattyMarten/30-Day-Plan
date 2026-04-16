@@ -1,0 +1,36 @@
+fileFormatVersion: 2
+guid: 636bd7185903d4e7ab40d269e7541c62
+labels:
+- Square
+- Buttons
+- Grunge
+- UI
+- GUI
+- Horror
+- User
+- Interface
+- Rough
+- Blood
+- Gritty
+- Dirt
+- Damaged
+- Destroyed
+- UGUI
+- Prefabs
+- Sliced
+- Old
+- Menu
+- HUD
+timeCreated: 1446434467
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Buttons/Square Buttons/sq3Button.prefab
+  uploadId: 172037

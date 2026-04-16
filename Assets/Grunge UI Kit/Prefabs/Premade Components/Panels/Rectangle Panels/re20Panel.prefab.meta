@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: fc9dc6e2a2b3447018f108ec96536704
+labels:
+- GUI
+- Gritty
+- Grunge
+- HUD
+- Menu
+- Prefabs
+- Rough
+- Texture
+- UGUI
+- UI
+- chalk
+- damaged
+- distressed
+- scratch
+timeCreated: 1491453872
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Panels/Rectangle Panels/re20Panel.prefab
+  uploadId: 172037

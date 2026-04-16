@@ -1,0 +1,32 @@
+fileFormatVersion: 2
+guid: 5d470e6f148bd48fa93f13bb92a7b2e7
+labels:
+- Menu
+- HUD
+- Scary
+- Destroyed
+- Damaged
+- UGUI
+- Gritty
+- Blood
+- Rough
+- Grunge
+- GrungeUIKit
+- UI
+- GUI
+- Horror
+- User
+- Interface
+timeCreated: 1446698698
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Misc/Menu7.prefab
+  uploadId: 172037

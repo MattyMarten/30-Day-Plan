@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: 94cf5082c529c451cb2bf75f592b51b4
+labels:
+- Menu
+- HUD
+- Prefabs
+- Sliced
+- Destroyed
+- UGUI
+- Square
+- Panels
+- UI
+- GUI
+- Grunge
+- Gritty
+- Rough
+timeCreated: 1444872573
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Panels/Square Panels/sq12Panel.prefab
+  uploadId: 172037

@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 072c14148f0af425fa66adf7c50ade1b
+labels:
+- Interface
+- GrungeUIKit
+- Color
+- Palette
+- VitalZigns
+timeCreated: 1446673923
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Palettes/Palette1.prefab
+  uploadId: 172037

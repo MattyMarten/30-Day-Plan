@@ -53,8 +53,11 @@ public class GrinderMachine : MonoBehaviour
 
         HashSet<InventoryLoot> removedLoot = new();
 
-        for (int x = 0; x < playerInventory.gridWidth; x++)
-            for (int y = 0; y < playerInventory.gridHeight; y++)
+        int width = playerInventory.gridItems.GetLength(0); // always up to date
+        int height = playerInventory.gridItems.GetLength(1);
+
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
             {
                 var loot = playerInventory.gridItems[x, y];
                 if (loot != null && loot.item != null && !removedLoot.Contains(loot))

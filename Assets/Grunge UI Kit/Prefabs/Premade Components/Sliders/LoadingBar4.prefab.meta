@@ -1,0 +1,37 @@
+fileFormatVersion: 2
+guid: ac1d125896bd24d41b44cd4846100c95
+labels:
+- Slider
+- Grunge
+- UI
+- GUI
+- User
+- Interface
+- Horror
+- Rough
+- Blood
+- GrungeUIKit
+- Gritty
+- Dirt
+- Damaged
+- Destroyed
+- UGUI
+- Prefabs
+- Scary
+- Old
+- Menu
+- HUD
+- Loading
+timeCreated: 1444881582
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Sliders/LoadingBar4.prefab
+  uploadId: 172037

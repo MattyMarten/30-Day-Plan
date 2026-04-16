@@ -39,11 +39,11 @@ public class CraftingStationUI : MonoBehaviour
         {
             var go = Instantiate(craftingRowPrefab, contentParent);
 
-            go.transform.Find("Item Icon").GetComponent<Image>().sprite = recipe.displayIcon;
-            go.transform.Find("Item Name").GetComponent<TMP_Text>().text = recipe.displayName;
+            go.transform.Find("Icon Part/Item Icon").GetComponent<Image>().sprite = recipe.displayIcon;
+            go.transform.Find("Text Part/Item Name").GetComponent<TMP_Text>().text = recipe.displayName;
 
             // Build requirements & have/needs string
-            var reqText = go.transform.Find("Requirements").GetComponent<TMP_Text>();
+            var reqText = go.transform.Find("Text Part/Requirements").GetComponent<TMP_Text>();
             string needs = string.Join(", ", recipe.requiredMaterials.Select(r => $"{r.amount}x {r.material}"));
             string haves = string.Join(", ", recipe.requiredMaterials.Select(r =>
             {
@@ -53,12 +53,12 @@ public class CraftingStationUI : MonoBehaviour
             reqText.text = $"Need: {needs}\nHave: {haves}";
 
             // Craft Button
-            var btn = go.transform.Find("Craft").GetComponent<Button>();
-            var btnText = go.transform.Find("Craft/Craft").GetComponent<TMP_Text>();
-            var valText = go.transform.Find("Craft/Value").GetComponent<TMP_Text>();
+            var btn = go.transform.Find("Craft Button").GetComponent<Button>();
+            var btnText = go.transform.Find("Craft Button/Craft").GetComponent<TMP_Text>();
+            var valText = go.transform.Find("Text Part/Value").GetComponent<TMP_Text>();
 
             btnText.text = "Craft";
-            valText.text = $"Value: {recipe.valueGold}gold";
+            valText.text = $"Value: {recipe.valueGold}G";
 
             if (canCraft.Contains(recipe))
             {

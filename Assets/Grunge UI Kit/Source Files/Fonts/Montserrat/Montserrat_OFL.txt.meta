@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f4960b5cbe7ab491a81e0252f1df5da1
+timeCreated: 1491450609
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Source Files/Fonts/Montserrat/Montserrat_OFL.txt
+  uploadId: 172037

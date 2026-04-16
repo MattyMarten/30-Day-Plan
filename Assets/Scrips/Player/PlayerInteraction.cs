@@ -80,9 +80,6 @@ public class PlayerInteraction : MonoBehaviour
 
         bool lookingAtStorage = storageChest != null;
 
-        if (storagePromptPanel != null)
-            storagePromptPanel.SetActive(lookingAtStorage);
-
         if (storagePromptText != null)
             storagePromptText.text = lookingAtStorage ? "OPEN STORAGE" : "";
 

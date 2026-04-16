@@ -1,0 +1,35 @@
+fileFormatVersion: 2
+guid: 1ccc9b5d8a9534923b9a09ab0d4d6f89
+labels:
+- Circle
+- GUI
+- Gritty
+- Grunge
+- HUD
+- Interface
+- Menu
+- Old
+- Panels
+- Prefabs
+- Rough
+- Splatter
+- Texture
+- UI
+- damaged
+- distressed
+- grainy
+- ink
+- scratch
+timeCreated: 1491452329
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Panels/Circle Panels/ci15Panel.prefab
+  uploadId: 172037

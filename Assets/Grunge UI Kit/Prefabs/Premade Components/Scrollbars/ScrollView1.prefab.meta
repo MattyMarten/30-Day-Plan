@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: 39ec77935fa044fc2ad2ce667afcbb9e
+labels:
+- Grunge
+- UI
+- GUI
+- Horror
+- User
+- Interface
+- Rough
+- Gritty
+- Damaged
+- Destroyed
+- UGUI
+- Prefabs
+- ScrollView
+- HUD
+timeCreated: 1446700236
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 53815
+  packageName: Grunge UI Kit
+  packageVersion: 1.1.0
+  assetPath: Assets/Grunge UI Kit/Prefabs/Premade Components/Scrollbars/ScrollView1.prefab
+  uploadId: 172037
