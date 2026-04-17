@@ -613,8 +613,20 @@ public class GridInventory : MonoBehaviour
     public void RefreshGridUI()
     {
         // Destroy or deactivate all current UI item icons
-        foreach (Transform child in rectTransform)
+        foreach (Transform child in itemsRoot)
             Destroy(child.gameObject);
+
+        if (rarityHighlightRoot != null)
+        {
+            foreach (Transform child in rarityHighlightRoot)
+                Destroy(child.gameObject);
+        }
+
+        if (placementHighlightRoot != null)
+        {
+            foreach (Transform child in placementHighlightRoot)
+                Destroy(child.gameObject);
+        }
 
         rarityPool.Clear();
         placementPool.Clear();

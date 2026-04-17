@@ -15,7 +15,7 @@ public class Item : ScriptableObject
     {
         switch (rarity)
         {
-            case ItemRarity.Junk:      return new Color(0.5f, 0.5f, 0.5f, 0.25f); // gray
+            case ItemRarity.Junk:      return new Color(0.5f, 0.5f, 0.5f, 1f); // gray
             case ItemRarity.Valuable:  return new Color(0.2f, 0.8f, 0.3f, 0.25f); // green
             case ItemRarity.Unusual:   return new Color(0.25f, 0.55f, 1.0f, 0.25f); // blue
             case ItemRarity.Exotic:    return new Color(1.00f, 0.80f, 0.15f, 0.25f); // gold

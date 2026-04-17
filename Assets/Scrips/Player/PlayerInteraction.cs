@@ -156,12 +156,14 @@ public class PlayerInteraction : MonoBehaviour
         // Update the info panel if active
         if (pickupInfoPanel != null && pickup.Item != null)
         {
-            itemNameText.text = pickup.Item.itemName + "\n" + FormatMaterialValue(pickup.Item);
             string htmlColor = ColorUtility.ToHtmlStringRGB(pickup.Item.RarityColor);
-            itemRarityText.text = $"<color=#{htmlColor}>{pickup.Item.rarity}</color>";
+            string infoText =
+            $"<b>{pickup.Item.itemName}</b>\n" +
+            $"<size=80%><color=#{htmlColor}>{pickup.Item.rarity}</color></size>\n" +
+            $"{FormatMaterialValue(pickup.Item)}";
+            itemNameText.text = infoText;
             itemSpriteImage.sprite = pickup.Item.image;
-            rarityBackground.color = pickup.Item.RarityColor; // uses your new property!
-            
+            rarityBackground.color = pickup.Item.RarityColor;
         }
 
         // Handle the interact input for pickup

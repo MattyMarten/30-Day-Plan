@@ -28,7 +28,7 @@ public class MaterialStorageUI : MonoBehaviour
             var amountText = go.transform.Find("materialAmountText").GetComponent<TMP_Text>();
 
             nameText.text = kv.Key.ToString();
-            amountText.text = kv.Value.ToString();
+            amountText.text = "x" + kv.Value;
 
             spawnedRows.Add(go);
         }
