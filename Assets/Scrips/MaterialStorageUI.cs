@@ -23,11 +23,10 @@ public class MaterialStorageUI : MonoBehaviour
         {
             var go = Instantiate(rowPrefab, contentRoot);
 
-            // Find both desired TMP_Texts in the prefab
             var nameText = go.transform.Find("materialNameText").GetComponent<TMP_Text>();
             var amountText = go.transform.Find("materialAmountText").GetComponent<TMP_Text>();
 
-            nameText.text = kv.Key.ToString();
+            nameText.text = kv.Key.displayName;    // Use displayName property!
             amountText.text = "x" + kv.Value;
 
             spawnedRows.Add(go);

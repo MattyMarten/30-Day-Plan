@@ -32,9 +32,6 @@ public class GridInventoryControls : MonoBehaviour
     // UI open flag (set by InventoryControls)
     private bool uiOpen;
 
-    // Placement preview caching
-    private Vector2Int lastPreviewTopLeft;
-    private bool hasPreview;
 
     public GameObject tooltipPanel;
 
@@ -60,7 +57,6 @@ public class GridInventoryControls : MonoBehaviour
         ClearPreview();
 
         selectedGrid = grid;
-        hasPreview = false;
     }
 
     private void Awake()
@@ -117,7 +113,6 @@ public class GridInventoryControls : MonoBehaviour
         {
             heldItem.RotateClockwise();
             heldItemRect = heldItem.GetComponent<RectTransform>();
-            hasPreview = false;
             return;
         }
 
@@ -154,16 +149,7 @@ public class GridInventoryControls : MonoBehaviour
             {
                 Vector2Int topLeft = selectedGrid.GetTopLeftForCenteredPlacement(hoveredTile, heldItem);
                 selectedGrid.ShowPlacementPreview(heldItem, topLeft.x, topLeft.y);
-                hasPreview = true;
             }
-            else
-            {
-                hasPreview = false;
-            }
-        }
-        else
-        {
-            hasPreview = false;
         }
     }
 
@@ -192,7 +178,6 @@ public class GridInventoryControls : MonoBehaviour
                 hasOrigin = false;
 
                 selectedGrid.ClearPlacementPreview();
-                hasPreview = false;
                 return;
             }
 
@@ -262,7 +247,6 @@ public class GridInventoryControls : MonoBehaviour
             hasOrigin = true;
 
             selectedGrid.ClearPlacementPreview(); 
-            hasPreview = false;
 
             return;
         }
@@ -286,8 +270,6 @@ public class GridInventoryControls : MonoBehaviour
         originGrid = selectedGrid;
         originTopLeft = foundTopLeft;
         hasOrigin = true;
-
-        hasPreview = false;
     }
 
     private void ReturnHeldItemToOrigin()
@@ -308,14 +290,12 @@ public class GridInventoryControls : MonoBehaviour
         heldItemRect = null;
         originGrid = null;
         hasOrigin = false;
-        hasPreview = false;
     }
 
     private void ClearPreview()
     {
         if (selectedGrid != null)
             selectedGrid.ClearPlacementPreview();
-        hasPreview = false;
     }
 
   private void DropHeldItem()
@@ -341,7 +321,6 @@ public class GridInventoryControls : MonoBehaviour
         heldItemRect = null;
         originGrid = null;
         hasOrigin = false;
-        hasPreview = false;
     }
 }
 
@@ -359,12 +338,13 @@ public class GridInventoryControls : MonoBehaviour
         tooltipPanel.SetActive(false);
     }
 
-string GetMaterialSummary(Item item)
-{
-    if (item.MaterialValue == null || item.MaterialValue.Count == 0)
-        return "None";
-    return string.Join(", ", item.MaterialValue.Select(kv => $"{kv.Value}x{kv.Key}"));
-}
+    string GetMaterialSummary(Item item)
+    {
+        if (item.MaterialValue == null || item.MaterialValue.Count == 0)
+            return "None";
+        // kv.Key is a RawMaterialSO reference. Use its displayName property:
+        return string.Join(", ", item.MaterialValue.Select(kv => $"{kv.Value}x{kv.Key.displayName}"));
+    }
 
     private static Vector2 GetMouseScreenPosition()
     {

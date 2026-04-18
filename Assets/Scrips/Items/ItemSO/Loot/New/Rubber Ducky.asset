@@ -25,5 +25,5 @@ MonoBehaviour:
   occupiedCells: []
   actionType: 4
   materialAmounts:
-  - material: 5
+  - material: {fileID: 11400000, guid: 85968570610787747bf4dff418a210e3, type: 2}
     amount: 2

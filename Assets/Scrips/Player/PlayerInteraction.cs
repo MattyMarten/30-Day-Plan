@@ -16,9 +16,8 @@ public class PlayerInteraction : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject interactText;
-    [SerializeField] private GameObject storageUIPanel;          // assign your UI Panel
-    [SerializeField] private RawMaterialStorage storage;         // assign your storage chest
-
+    [SerializeField] private GameObject storageUIPanel;            // assign your UI Panel
+    [SerializeField] private RawMaterialStorage storage;           // assign your storage chest
 
     [Header("Interact UI")]
     [SerializeField] private GameObject pickupInfoPanel;
@@ -31,53 +30,97 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI grinderPromptText;
     [SerializeField] private GameObject storagePromptPanel;      // assign "PRESS E TO OPEN STORAGE" panel (optional)
     [SerializeField] private TMPro.TextMeshProUGUI storagePromptText;
-    [SerializeField] private GameObject craftingUIPanel;       // assign the Crafting Canvas panel here
-    [SerializeField] private CraftingStationUI craftingUI;     // assign the CraftingStationUI script
+    [SerializeField] private GameObject craftingUIPanel;         // assign the Crafting Canvas panel here
+    [SerializeField] private CraftingStationUI craftingUI;       // assign the CraftingStationUI script
 
     private void Awake()
     {
         if (input == null)
             input = GetComponent<StarterAssetsInputs>();
-
         if (playerHoldItem == null)
             playerHoldItem = GetComponent<PlayerHoldItem>();
-
         if (playerCamera == null)
             playerCamera = Camera.main;
 
-        if (interactText != null)              interactText.SetActive(false);
-        if (pickupInfoPanel != null)           pickupInfoPanel.SetActive(false);
-        if (storageUIPanel != null)            storageUIPanel.SetActive(false);
-        if (storagePromptPanel != null)        storagePromptPanel.SetActive(false);
-        if (grinderPromptPanel != null)        grinderPromptPanel.SetActive(false);
-        if (craftingUIPanel != null)           craftingUIPanel.SetActive(false);
+        HideAllUIPanels();
     }
 
     [System.Obsolete]
     private void Update()
     {
-        if (input == null || playerCamera == null)
+        if (!AreCoreRefsValid())
         {
             SetUI(false);
             return;
         }
 
-        if (storageUIPanel != null && storageUIPanel.activeSelf)
-        {
-            if (input.ConsumeInteract())
-            {
-                storageUIPanel.SetActive(false);
-                return; // Stop further input processing this frame
-            }
-        }
+        // Panels: hide after pressing interact
+        if (CheckAndHandleOpenPanels()) return;
 
-        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        float sphereRadius = 0.4f;
-
-        bool hasTarget = Physics.SphereCast(ray, sphereRadius, out RaycastHit hit, interactDistance, interactLayer, QueryTriggerInteraction.Collide);
+        // Perform spherecast for all detectable interactions
+        bool hasTarget = Physics.SphereCast(
+            new Ray(playerCamera.transform.position, playerCamera.transform.forward),
+            0.4f,
+            out RaycastHit hit,
+            interactDistance,
+            interactLayer,
+            QueryTriggerInteraction.Collide
+        );
 
         RawMaterialStorage storageChest = hasTarget ? hit.collider.GetComponentInParent<RawMaterialStorage>() : null;
+        CraftingTable craftingTable = hasTarget ? hit.collider.GetComponentInParent<CraftingTable>() : null;
+        GrinderMachine grinder = hasTarget ? hit.collider.GetComponentInParent<GrinderMachine>() : null;
+        ItemPickup pickup = hasTarget ? hit.collider.GetComponentInParent<ItemPickup>() : null;
 
+        // Storage logic
+        HandleStorage(storageChest);
+
+        // Crafting station logic
+        if (HandleCraftingStation(craftingTable)) return;
+
+        // Grinder logic
+        HandleGrinder(grinder);
+
+        // Pickup logic (incl. UI/prompt)
+        HandleItemPickup(pickup);
+    }
+
+    private bool AreCoreRefsValid()
+    {
+        return !(input == null || playerCamera == null);
+    }
+
+    private void HideAllUIPanels()
+    {
+        if (interactText != null)          interactText.SetActive(false);
+        if (pickupInfoPanel != null)       pickupInfoPanel.SetActive(false);
+        if (storageUIPanel != null)        storageUIPanel.SetActive(false);
+        if (storagePromptPanel != null)    storagePromptPanel.SetActive(false);
+        if (grinderPromptPanel != null)    grinderPromptPanel.SetActive(false);
+        if (craftingUIPanel != null)       craftingUIPanel.SetActive(false);
+    }
+
+    private bool CheckAndHandleOpenPanels()
+    {
+        // Hide storage
+        if (storageUIPanel != null && storageUIPanel.activeSelf && input.ConsumeInteract())
+        {
+            storageUIPanel.SetActive(false);
+            SetUIMode(false);
+            return true;
+        }
+        // Hide crafting
+        if (craftingUIPanel != null && craftingUIPanel.activeSelf && input.ConsumeInteract())
+        {
+            craftingUIPanel.SetActive(false);
+            SetUIMode(false);
+            return true;
+        }
+        return false;
+    }
+
+    private void HandleStorage(RawMaterialStorage storageChest)
+    {
         bool lookingAtStorage = storageChest != null;
 
         if (storagePromptText != null)
@@ -86,39 +129,33 @@ public class PlayerInteraction : MonoBehaviour
         if (lookingAtStorage && input.ConsumeInteract())
         {
             if (storageUIPanel != null) storageUIPanel.SetActive(true);
+            SetUIMode(true);
 
-            var storageUI = storageUIPanel.GetComponent<MaterialStorageUI>();
+            var storageUI = storageUIPanel?.GetComponent<MaterialStorageUI>();
             if (storageUI != null)
             {
                 storageUI.storage = storageChest.GetComponent<RawMaterialStorage>();
                 storageUI.RefreshUI();
             }
         }
+    }
 
-        CraftingTable craftingTable = hasTarget ? hit.collider.GetComponentInParent<CraftingTable>() : null;
-
+    private bool HandleCraftingStation(CraftingTable craftingTable)
+    {
         bool lookingAtCrafting = craftingTable != null;
-
-        if (craftingUIPanel != null && craftingUIPanel.activeSelf)
-        {
-            if (input.ConsumeInteract())
-            {
-                craftingUIPanel.SetActive(false);
-                return;
-            }
-        }
-
         if (lookingAtCrafting && input.ConsumeInteract())
         {
             if (craftingUIPanel != null) craftingUIPanel.SetActive(true);
+            SetUIMode(true);
+
             if (craftingUI != null) craftingUI.RefreshUI();
-            return; // Avoid accidental double-input in the same frame
+            return true; // End update so no double-input
         }
+        return false;
+    }
 
-
-
-        GrinderMachine grinder = hasTarget ? hit.collider.GetComponentInParent<GrinderMachine>() : null;
-
+    private void HandleGrinder(GrinderMachine grinder)
+    {
         bool lookingAtGrinder = grinder != null;
 
         if (grinderPromptPanel != null)
@@ -127,33 +164,27 @@ public class PlayerInteraction : MonoBehaviour
         if (grinderPromptText != null)
             grinderPromptText.text = lookingAtGrinder ? "GRIND" : "";
 
-        if (lookingAtGrinder)
+        if (lookingAtGrinder && input.ConsumeInteract())
         {
-            if (input.ConsumeInteract())
-            {
-                grinder.GrindAllItems();
+            grinder.Grind();
+            if (grinderPromptPanel != null)
                 grinderPromptPanel.SetActive(false); // Hide after grinding
-            }
         }
+    }
 
-
-        ItemPickup pickup = hasTarget ? hit.collider.GetComponentInParent<ItemPickup>() : null;
-
+    private void HandleItemPickup(ItemPickup pickup)
+    {
         bool lookingAtPickup = pickup != null;
 
-        // UI Prompt logic
         if (interactText != null)
             interactText.SetActive(lookingAtPickup);
 
-        // Pickup info panel logic
         if (pickupInfoPanel != null)
             pickupInfoPanel.SetActive(lookingAtPickup);
 
-        // If not looking at a pickup, we're done for this frame
-        if (!lookingAtPickup)
-            return;
+        if (!lookingAtPickup) return;
 
-        // Update the info panel if active
+        // Update info
         if (pickupInfoPanel != null && pickup.Item != null)
         {
             string htmlColor = ColorUtility.ToHtmlStringRGB(pickup.Item.RarityColor);
@@ -166,7 +197,7 @@ public class PlayerInteraction : MonoBehaviour
             rarityBackground.color = pickup.Item.RarityColor;
         }
 
-        // Handle the interact input for pickup
+        // Handle pickup
         if (input.ConsumeInteract())
         {
             if (inventoryManager == null)
@@ -174,24 +205,33 @@ public class PlayerInteraction : MonoBehaviour
                 Debug.LogWarning($"{nameof(PlayerInteraction)}: inventoryManager is not assigned in the Inspector.", this);
                 return;
             }
-
             pickup.PickUp(inventoryManager, playerHoldItem);
         }
     }
 
     private void SetUI(bool status)
     {
-        if (interactText != null)
-            interactText.SetActive(status);
-        if (pickupInfoPanel != null)
-            pickupInfoPanel.SetActive(status);
+        if (interactText != null) interactText.SetActive(status);
+        if (pickupInfoPanel != null) pickupInfoPanel.SetActive(status);
     }
 
-    // Example for materials
     private string FormatMaterialValue(Item item)
     {
         if (item.MaterialValue == null || item.MaterialValue.Count == 0)
             return "No materials";
-        return string.Join(", ", item.MaterialValue.Select(kv => $"{kv.Value}x {kv.Key}"));
+        return string.Join(", ", item.MaterialValue.Select(kv => $"{kv.Value}x {kv.Key.displayName}"));
     }
+
+    private void SetUIMode(bool enabled)
+    {
+        // Disable/enable movement & look (FirstPersonController)
+        var fps = GetComponent<StarterAssets.FirstPersonController>();
+        if (fps != null)
+            fps.enabled = !enabled;
+
+        // Show/hide mouse
+        Cursor.visible = enabled;
+        Cursor.lockState = enabled ? CursorLockMode.None : CursorLockMode.Locked;
+    }
+
 }

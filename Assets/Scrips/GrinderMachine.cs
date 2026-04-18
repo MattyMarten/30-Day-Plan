@@ -42,61 +42,52 @@ public class GrinderMachine : MonoBehaviour
     }
 
 
-    // Call this function (e.g., from a button) to grind all inventory
-    [System.Obsolete]
-    public void GrindAllItems()
-    {
-        if (playerInventory == null || storage == null) return;
+public void Grind()
+{
+    if (playerInventory == null || storage == null) return;
 
-        // 1. Track what materials we got
-        Dictionary<RawMaterial, int> resultMaterials = new();
+    // Copy logic from GrindAllItems here ↓↓↓
+    Dictionary<RawMaterial, int> resultMaterials = new();
+    HashSet<InventoryLoot> removedLoot = new();
 
-        HashSet<InventoryLoot> removedLoot = new();
+    int width = playerInventory.gridItems.GetLength(0);
+    int height = playerInventory.gridItems.GetLength(1);
 
-        int width = playerInventory.gridItems.GetLength(0); // always up to date
-        int height = playerInventory.gridItems.GetLength(1);
-
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
+    for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
+        {
+            var loot = playerInventory.gridItems[x, y];
+            if (loot != null && loot.item != null && !removedLoot.Contains(loot))
             {
-                var loot = playerInventory.gridItems[x, y];
-                if (loot != null && loot.item != null && !removedLoot.Contains(loot))
+                foreach (var pair in loot.item.MaterialValue)
                 {
-                    foreach (var pair in loot.item.MaterialValue)
-                    {
-                        if (!resultMaterials.ContainsKey(pair.Key))
-                            resultMaterials[pair.Key] = 0;
-                        resultMaterials[pair.Key] += pair.Value;
-                    }
-                    playerInventory.RemoveMultiCellItem(loot);
-                    removedLoot.Add(loot);
+                    if (!resultMaterials.ContainsKey(pair.Key))
+                        resultMaterials[pair.Key] = 0;
+                    resultMaterials[pair.Key] += pair.Value;
                 }
+                playerInventory.RemoveMultiCellItem(loot);
+                removedLoot.Add(loot);
             }
-
-        // 2. Now add results to storage
-        foreach (var kvp in resultMaterials)
-            storage.Add(kvp.Key, kvp.Value);
-
-        // 3. Log the updated storage contents
-        foreach (var kvp in storage.GetAll())
-        {
-            Debug.Log($"Storage: {kvp.Key}: {kvp.Value}");
         }
 
-        // 4. Refresh UI if open
-        var storageUI = FindObjectOfType<MaterialStorageUI>();
-        if (storageUI != null && storageUI.gameObject.activeInHierarchy)
-        {
-            storageUI.RefreshUI();
-        }
+    // Add results to storage
+    foreach (var kvp in resultMaterials)
+        storage.Add(kvp.Key, kvp.Value);
 
-        // 5. Show grind summary
-        ShowSummary(resultMaterials);
+    foreach (var kvp in storage.GetAll())
+        Debug.Log($"Storage: {kvp.Key}: {kvp.Value}");
 
-        // 6. Optional: refresh grid UI
-        if (gridInventory != null)
-            gridInventory.RefreshGridUI();
+    var storageUI = FindAnyObjectByType<MaterialStorageUI>();
+    if (storageUI != null && storageUI.gameObject.activeInHierarchy)
+    {
+        storageUI.RefreshUI();
     }
+
+    ShowSummary(resultMaterials);
+
+    if (gridInventory != null)
+        gridInventory.RefreshGridUI();
+}
     public void ShowSummary(Dictionary<RawMaterial, int> materials)
     {
         if (summaryPanel != null) summaryPanel.SetActive(true);
@@ -112,7 +103,7 @@ public class GrinderMachine : MonoBehaviour
             string summary = "You received:\n";
             foreach (var kvp in materials)
             {
-                summary += $"{kvp.Value}x {kvp.Key}\n";
+                summary += $"{kvp.Value}x {kvp.Key.displayName}\n";
             }
             summaryText.text = summary;
         }

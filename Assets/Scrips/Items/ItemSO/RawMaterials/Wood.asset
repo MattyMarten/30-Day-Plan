@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8044eae7f77b60a4bbd6c031ee2f4ddb, type: 3}
   m_Name: Wood
   m_EditorClassIdentifier: Assembly-CSharp::RawMaterial
-  displayName: 
-  icon: {fileID: 0}
-  description: 
+  displayName: Wood
+  icon: {fileID: 21300000, guid: b387ce7a9bdac81488c0e252292a419f, type: 3}
+  description: Plain ass wood
