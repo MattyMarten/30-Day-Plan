@@ -90,4 +90,3 @@ public class Item : ScriptableObject
 public enum ItemType { Loot, Utility, KeyItem, Armor }
 public enum ActionType { Flashlight, Hit, Open, Use, Pickup }
 public enum ItemRarity { Junk, Valuable, Unusual, Exotic, Cursed }
-public enum RawMaterial { None, Wood, Scrap, Cloth, Glass, Rubber, Plastic, Paper}

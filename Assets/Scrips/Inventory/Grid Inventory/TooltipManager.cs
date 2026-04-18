@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class TooltipManager : MonoBehaviour
 {
@@ -19,7 +20,10 @@ public class TooltipManager : MonoBehaviour
         }
 
         // Raycast all objects under the pointer
-        var pointerData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+        var pointerData = new PointerEventData(EventSystem.current)
+        {
+            position = Mouse.current.position.ReadValue()
+        };
         var results = new System.Collections.Generic.List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerData, results);
 
